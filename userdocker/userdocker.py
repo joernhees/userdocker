@@ -10,14 +10,6 @@ import sys
 from config import *
 
 
-def str_to_bool(s):
-    """Convert str to bool."""
-    s = s.lower()
-    if s not in {'true', 'false', '1', '0'}:
-        raise ValueError('Bool expected, but got %r' % s)
-    return s in {'true', '1'}
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description='allows restricted access to docker for users',
@@ -25,19 +17,15 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--verbose",
-        help="prints the invoked docker commandline",
-        action="store",
-        default=True,
-        type=str_to_bool,
+        "--quiet",
+        help="silences output of invoked docker command",
+        action="store_true",
     )
 
     parser.add_argument(
         "--dry-run",
         help="doesn't actually invoke the docker command",
-        action="store",
-        default=False,
-        type=str_to_bool,
+        action="store_true",
     )
 
     parser.add_argument(
@@ -94,14 +82,15 @@ def build_docker_commandline(args):
     cmd.append(args.image)
     cmd.extend(args.image_args)
 
-    if args.verbose:
-        print(cmd)
     return cmd
 
 
 def main():
     args = parse_args()
     cmd = build_docker_commandline(args)
+
+    if not args.quiet:
+        print(cmd)
 
     if not args.dry_run:
         sys.exit(subprocess.check_call(
