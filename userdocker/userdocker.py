@@ -64,6 +64,7 @@ def build_docker_commandline(args):
     user_home = pwd.getpwuid(uid)[5]
 
     cmd = [args.executor]
+    cmd += ['run']
     cmd += ARGS
 
     for volume_mount in VOLUME_MOUNTS:
