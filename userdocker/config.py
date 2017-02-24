@@ -50,7 +50,7 @@ RUN_PULL = 'default'
 # with any mounts.
 USER_IN_CONTAINER = True
 
-# Environment vars to set for the container
+# Environment vars to set for the container:
 ENV_VARS = []
 ENV_VARS_EXT = {
     'nvidia-docker': [
@@ -59,8 +59,9 @@ ENV_VARS_EXT = {
 }
 
 # always injected
-ARGS = [
+ARGS_RUN = [
     '--rm',
     '-t',
     '-i',
 ]
+ARGS_PS = ['-a']

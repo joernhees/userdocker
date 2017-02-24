@@ -123,7 +123,7 @@ def prepare_commandline_run(args):
 
     cmd = [args.executor]
     cmd += ['run']
-    cmd += ARGS
+    cmd += ARGS_RUN
 
     mounts = []
     mounts_always = expand_mounts(VOLUME_MOUNTS_ALWAYS, **mt_args)
@@ -225,7 +225,7 @@ def prepare_commandline_run(args):
 
 
 def prepare_commandline_ps(args):
-    cmd = [args.executor, 'ps', '-a']
+    cmd = [args.executor, 'ps'] + ARGS_PS
     return cmd
 
 
