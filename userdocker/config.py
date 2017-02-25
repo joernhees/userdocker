@@ -2,7 +2,7 @@
 
 # Admin default values for output of userdocker.
 QUIET = False
-DEBUG = False
+DEBUG = True
 
 # Available executors for users.
 EXECUTORS = {
@@ -77,9 +77,13 @@ ENV_VARS_SET_USERDOCKER_META_INFO = True
 
 
 # always injected
-ARGS_RUN = [
-    '--rm',
-    '-t',
-    '-i',
-]
-ARGS_PS = ['-a']
+ARGS = {
+    'run': [
+        '--rm',
+        '-t',
+        '-i',
+    ],
+    'ps': [
+        '-a',
+    ],
+}
