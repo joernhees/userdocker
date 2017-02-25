@@ -11,6 +11,37 @@ EXECUTORS = {
 }
 EXECUTOR_DEFAULT = 'docker'
 
+# The following allows you to specify which docker top level commands a user can
+# run at all (still restricted by the following settings):
+ALLOWED_SUBCOMMANDS = [
+    'run',
+    'ps',
+    'images',
+    'pull',
+    'load',
+]
+
+# Arguments (more precisely simple flags) that you want to make available to the
+# user or enforce. Do not include args that are handled below!
+# The following arguments will always be injected for the corresponding command:
+ARGS_ALWAYS = {
+    'run': [
+        # '-t',
+        # '-i',
+        '--rm',
+    ],
+}
+# The following arguments are available to the user for the given command:
+ARGS_AVAILABLE = {
+    'run': [
+        '-t',
+        '-i',
+    ],
+    'ps': [
+        '-a',
+    ],
+}
+
 
 # Volume mounts:
 # - VOLUME_MOUNTS_ALWAYS will be mounted whether the user wants it or not
@@ -46,7 +77,8 @@ ALLOWED_IMAGE_REGEXPS = [
 
 # Normally docker run automatically pulls images that aren't available locally.
 # This possible values here are ['default', 'never', 'always']
-# 'never' will restrict to locally available images.
+# 'never' will restrict to locally available images (see ALLOWED_COMMANDS and
+# restrict load command if desired!).
 RUN_PULL = 'default'
 
 
@@ -55,7 +87,7 @@ RUN_PULL = 'default'
 # with any mounts.
 USER_IN_CONTAINER = True
 
-# The following allows to drop / grant capabilities to the container.
+# The following allows to drop / grant capabilities of all containers.
 # By default we drop all and make the
 CAPS_DROP = ['ALL']
 CAPS_ADD = []
@@ -74,16 +106,3 @@ ENV_VARS_EXT = {
 # container. They might in future be used to allow users to interact with their
 # previously started containers.
 ENV_VARS_SET_USERDOCKER_META_INFO = True
-
-
-# always injected
-ARGS = {
-    'run': [
-        '--rm',
-        '-t',
-        '-i',
-    ],
-    'ps': [
-        '-a',
-    ],
-}

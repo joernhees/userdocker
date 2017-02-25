@@ -133,17 +133,51 @@ def parse_args():
     )
 
     # individual commands will be sub-parsers
-    subparsers = parser.add_subparsers(dest='cmd')
+    subparsers = parser.add_subparsers(dest='scmd')
     subparsers.required = True
 
-    ############################################################################
-    # parser for docker run
-    ############################################################################
-    parser_run = subparsers.add_parser(
-        'run',
-        help='lets a user run a "docker run"',
+    for scmd in ALLOWED_SUBCOMMANDS:
+        add_parser = globals().get('add_parser_%s' % scmd)
+        if add_parser:
+            add_parser(subparsers)
+        else:
+            init_subcommand_parser(subparsers, scmd)
+
+    args = parser.parse_args()
+    args.executor_path = EXECUTORS[args.executor]
+    return args
+
+
+def init_subcommand_parser(parent_parser, scmd):
+    parser = parent_parser.add_parser(
+        scmd,
+        help='Lets a user run "docker %s ..." command' % scmd
     )
-    parser_run.set_defaults(prepare_commandline=prepare_commandline_run)
+    prepare_commandline_f = globals().get(
+        'prepare_commandline_%s' % scmd,
+        init_cmd
+    )
+    parser.set_defaults(
+        prepare_commandline=prepare_commandline_f,
+        patch_through_args=[],
+    )
+
+    for arg in ARGS_AVAILABLE.get(scmd, []) + ARGS_ALWAYS.get(scmd, []):
+        h = "see docker help"
+        if arg in ARGS_ALWAYS.get(scmd, []):
+            h += ' (enforced by admin)'
+        parser.add_argument(
+            arg,
+            help=h,
+            action="append_const",
+            const=scmd,
+            dest='patch_through_args',
+        )
+    return parser
+
+
+def add_parser_run(parser):
+    parser_run = init_subcommand_parser(parser, 'run')
 
     parser_run.add_argument(
         "--no-default-mounts",
@@ -151,13 +185,14 @@ def parse_args():
         action="store_true",
     )
 
-    parser_run.add_argument(
-        "-v", "--volume",
-        help="user specified volume mounts (can be given multiple times)",
-        action="append",
-        dest='volumes',
-        default=[],
-    )
+    if VOLUME_MOUNTS_ALWAYS or VOLUME_MOUNTS_AVAILABLE or VOLUME_MOUNTS_DEFAULT:
+        parser_run.add_argument(
+            "-v", "--volume",
+            help="user specified volume mounts (can be given multiple times)",
+            action="append",
+            dest="volumes",
+            default=[],
+        )
 
     parser_run.add_argument(
         "image",
@@ -170,40 +205,34 @@ def parse_args():
         nargs=argparse.REMAINDER
     )
 
-    ############################################################################
-    # parser for docker ps
-    ############################################################################
-    parser_ps = subparsers.add_parser(
-        'ps',
-        help='lets a user run a "docker ps"',
-    )
-    parser_ps.set_defaults(prepare_commandline=prepare_commandline_ps)
+
+def init_cmd(args):
+    cmd = [args.executor_path, args.scmd] + ARGS_ALWAYS.get(args.scmd, [])
+    for pt_arg in args.patch_through_args:
+        if pt_arg not in cmd:
+            cmd.append(pt_arg)
+    return cmd
 
 
-    args = parser.parse_args()
-    args.executor_path = EXECUTORS[args.executor]
-    return args
-
-
-def expand_mounts(mounts, **kwds):
+def render_mounts(mounts, **kwds):
     return [m.format(**kwds) for m in mounts]
 
 
 def prepare_commandline_run(args):
     mt_args = {'USERNAME': user_name, 'HOME': user_home}
 
-    cmd = [args.executor_path, 'run'] + ARGS.get('run', [])
+    cmd = init_cmd(args)
 
     mounts = []
-    mounts_always = expand_mounts(VOLUME_MOUNTS_ALWAYS, **mt_args)
-    mounts_default = expand_mounts(VOLUME_MOUNTS_DEFAULT, **mt_args)
+    mounts_always = render_mounts(VOLUME_MOUNTS_ALWAYS, **mt_args)
+    mounts_default = render_mounts(VOLUME_MOUNTS_DEFAULT, **mt_args)
     mounts_available = mounts_always + mounts_default + \
-        expand_mounts(VOLUME_MOUNTS_AVAILABLE, **mt_args)
+        render_mounts(VOLUME_MOUNTS_AVAILABLE, **mt_args)
 
     mounts += mounts_always
 
     if not args.no_default_mounts:
-        mounts += expand_mounts(VOLUME_MOUNTS_DEFAULT, **mt_args)
+        mounts += render_mounts(VOLUME_MOUNTS_DEFAULT, **mt_args)
 
     for user_mount in args.volumes:
         if user_mount in mounts:
@@ -309,17 +338,11 @@ def prepare_commandline_run(args):
     return cmd
 
 
-def prepare_commandline_ps(args):
-    cmd = [args.executor_path, 'ps'] + ARGS.get('ps', [])
-    return cmd
-
-
 def exec_cmd(cmd, args):
     if not args.quiet:
         print(
             'would execute' if args.dry_run else 'executing',
-            'command:',
-            ' '.join(cmd)
+            'command:\n%s' % ' '.join(cmd)
         )
     if args.debug:
         print('internal repr:', cmd)
