@@ -164,15 +164,17 @@ def init_subcommand_parser(parent_parser, scmd):
 
     # patch args through
     _args_seen = []
-    for arg in ARGS_AVAILABLE.get(scmd, []) + ARGS_ALWAYS.get(scmd, []):
-        if isinstance(arg, str):
-            args = [arg]
-        elif isinstance(arg, (list, tuple, set)):
-            args = list(arg)
+    for args in ARGS_AVAILABLE.get(scmd, []) + ARGS_ALWAYS.get(scmd, []):
+        if isinstance(args, str):
+            # just a single arg as string
+            args = [args]
+        elif isinstance(args, (list, tuple)):
+            # aliases as list or tuple
+            args = list(args)
         else:
             raise NotImplementedError(
                 "Cannot understand admin defined ARG %s for command %s" % (
-                    arg, scmd))
+                    args, scmd))
 
         # remove dups (e.g. from being in AVAILABLE and ALWAYS)
         args = [arg for arg in args if arg not in _args_seen]
@@ -239,6 +241,15 @@ def init_cmd(args):
 
 def render_mounts(mounts, **kwds):
     return [m.format(**kwds) for m in mounts]
+
+
+def prepare_commandline_dockviz(args):
+    # just run dockviz
+    return [
+        args.executor_path, "run", "-it", "--rm",
+        "-v", "/var/run/docker.sock:/var/run/docker.sock",
+        "nate/dockviz", "images", "--tree"
+    ]
 
 
 def prepare_commandline_run(args):

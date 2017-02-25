@@ -14,7 +14,7 @@ EXECUTOR_DEFAULT = 'docker'
 # The following allows you to specify which docker top level commands a user can
 # run at all (still restricted by the following settings):
 ALLOWED_SUBCOMMANDS = [
-    'dockviz',  # tree viz of images
+    'dockviz',  # tree visualization of images
     'images',
     'load',
     'ps',
