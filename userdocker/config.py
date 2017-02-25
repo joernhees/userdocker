@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
+# Admin default values for output of userdocker.
+QUIET = False
+DEBUG = False
+
+# Available executors for users.
 EXECUTORS = {
     'docker': '/usr/bin/docker',
     'nvidia-docker': '/usr/bin/nvidia-docker',
 }
-DEFAULT_EXECUTOR = 'docker'
+EXECUTOR_DEFAULT = 'docker'
 
 
 # Volume mounts:
@@ -50,6 +55,13 @@ RUN_PULL = 'default'
 # with any mounts.
 USER_IN_CONTAINER = True
 
+# The following allows to drop / grant capabilities to the container.
+# By default we drop all and make the
+CAPS_DROP = ['ALL']
+CAPS_ADD = []
+PRIVILEGED = False
+
+
 # Environment vars to set for the container:
 ENV_VARS = []
 ENV_VARS_EXT = {
@@ -57,6 +69,12 @@ ENV_VARS_EXT = {
         'NCCL_TOPOLOGY=CUBEMESH',
     ]
 }
+
+# By default userdocker will set USERDOCKER and USERDOCKER_USER ENV vars to the
+# container. They might in future be used to allow users to interact with their
+# previously started containers.
+ENV_VARS_SET_USERDOCKER_META_INFO = True
+
 
 # always injected
 ARGS_RUN = [

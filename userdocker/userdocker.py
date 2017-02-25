@@ -18,6 +18,9 @@ import sys
 from config import *
 
 
+__version__ = '1.0.0-dev'
+
+
 class UserDockerException(Exception):
     pass
 
@@ -30,28 +33,29 @@ def parse_args():
 
     debug_group = parser.add_mutually_exclusive_group()
     debug_group.add_argument(
-        "--quiet",
+        "-q", "--quiet",
         help="silences output of invoked docker command",
         action="store_true",
+        default=QUIET,
     )
 
     debug_group.add_argument(
         "--debug",
         help="even more output for invoked docker command",
         action="store_true",
+        default=DEBUG,
     )
 
     parser.add_argument(
-        "--dry-run",
+        "-n", "--dry-run",
         help="doesn't actually invoke the docker command",
         action="store_true",
     )
 
-    # will be replaced with its dict value, see end of function
     parser.add_argument(
         "--executor",
         help="prints the invoked docker commandline",
-        default=DEFAULT_EXECUTOR,
+        default=EXECUTOR_DEFAULT,
         choices=EXECUTORS,
     )
 
@@ -104,7 +108,7 @@ def parse_args():
 
 
     args = parser.parse_args()
-    args.executor = EXECUTORS[args.executor]
+    args.executor_path = EXECUTORS[args.executor]
     return args
 
 
@@ -121,9 +125,7 @@ def prepare_commandline_run(args):
     user_home = pwd.getpwuid(uid)[5]
     mt_args = {'USERNAME': user_name, 'HOME': user_home}
 
-    cmd = [args.executor]
-    cmd += ['run']
-    cmd += ARGS_RUN
+    cmd = [args.executor_path, 'run'] + ARGS_RUN
 
     mounts = []
     mounts_always = expand_mounts(VOLUME_MOUNTS_ALWAYS, **mt_args)
@@ -181,11 +183,26 @@ def prepare_commandline_run(args):
     for mount in mounts:
         cmd += ['-v', mount]
 
-    for env_var in ENV_VARS + ENV_VARS_EXT.get(args.executor, []):
+    env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor_path, [])
+    if ENV_VARS_SET_USERDOCKER_META_INFO:
+        env_vars += [
+            'USERDOCKER=%s' % __version__,
+            'USERDOCKER_USER=%s' % user_name,
+            'USERDOCKER_UID=%d' % uid,
+        ]
+    for env_var in env_vars:
         cmd += ['-e', env_var]
+
 
     if USER_IN_CONTAINER:
         cmd += ['-u', '%d:%d' % (uid, gid)]
+
+    for cap_drop in CAPS_DROP:
+        cmd += ['--drop-cap=%s' % cap_drop]
+    for cap_add in CAPS_ADD:
+        cmd += ['--add-cap=%s' % cap_add]
+    if PRIVILEGED:
+        cmd += ['--privileged']
 
     cmd.append('--')
 
@@ -205,10 +222,11 @@ def prepare_commandline_run(args):
         pass
     elif RUN_PULL == 'always':
         # pull image
-        exec_cmd([args.executor, 'pull', img], args)
+        exec_cmd([args.executor_path, 'pull', img], args)
     elif RUN_PULL == 'never':
         # check if image is available locally
-        if not subprocess.check_output([args.executor, 'images', '-q', img]):
+        tmp = subprocess.check_output([args.executor_path, 'images', '-q', img])
+        if not tmp:
             raise UserDockerException(
                 "ERROR: you can only use locally available images, but %s could"
                 " not be found locally" % img
@@ -225,7 +243,7 @@ def prepare_commandline_run(args):
 
 
 def prepare_commandline_ps(args):
-    cmd = [args.executor, 'ps'] + ARGS_PS
+    cmd = [args.executor_path, 'ps'] + ARGS_PS
     return cmd
 
 
