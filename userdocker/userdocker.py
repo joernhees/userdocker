@@ -16,14 +16,14 @@ import pwd
 import re
 import subprocess
 import sys
+import logging
 
 __version__ = '1.0.0-dev'
 
+logger = logging.getLogger('userdocker')
+
 if not os.getenv('SUDO_UID'):
-    print(
-        "WARNING: %s should be executed via sudo" % sys.argv[0],
-        file=sys.stderr
-    )
+    logger.warning("%s should be executed via sudo", sys.argv[0])
 uid = os.getuid()
 uid = int(os.getenv('SUDO_UID', uid))
 gid = os.getgid()
@@ -37,6 +37,7 @@ group_names, gids = zip(*[
     for _g in grp.getgrall()
     if user_name in _g.gr_mem
 ])
+del user_pwd
 
 
 # The order of config files is (if existing):
@@ -83,15 +84,9 @@ _cfns = (
     + glob(_cd + 'uid/config_%d.py' % uid)
 )
 for _cfn in _cfns:
-    if DEBUG:
-        print('loading config:', _cfn, file=sys.stderr)
     with open(_cfn) as _cf:
         exec(_cf.read())
         configs_loaded.append(_cfn)
-if DEBUG:
-    for _var, _val in list(locals().items()):
-        if not _var.startswith('_'):
-            print("%s = %r" % (_var, _val), file=sys.stderr)
 
 
 class UserDockerException(Exception):
@@ -107,16 +102,20 @@ def parse_args():
     debug_group = parser.add_mutually_exclusive_group()
     debug_group.add_argument(
         "-q", "--quiet",
-        help="silences output of invoked docker command",
-        action="store_true",
-        default=QUIET,
+        help="silences userdocker output below WARNING severity",
+        action="store_const",
+        dest="loglvl",
+        const=logging.WARNING,
+        default=LOGLVL,
     )
-
     debug_group.add_argument(
         "--debug",
-        help="even more output for invoked docker command",
-        action="store_true",
-        default=DEBUG,
+        help="even more output for invoked docker command (use as first flag to"
+             "get config debug)",
+        action="store_const",
+        dest="loglvl",
+        const=logging.DEBUG,
+        default=LOGLVL,
     )
 
     parser.add_argument(
@@ -133,11 +132,11 @@ def parse_args():
     )
 
     # individual commands will be sub-parsers
-    subparsers = parser.add_subparsers(dest='scmd')
+    subparsers = parser.add_subparsers(dest="scmd")
     subparsers.required = True
 
     for scmd in ALLOWED_SUBCOMMANDS:
-        add_parser = globals().get('add_parser_%s' % scmd)
+        add_parser = globals().get("add_parser_%s" % scmd)
         if add_parser:
             add_parser(subparsers)
         else:
@@ -154,7 +153,7 @@ def init_subcommand_parser(parent_parser, scmd):
         help='Lets a user run "docker %s ..." command' % scmd
     )
     prepare_commandline_f = globals().get(
-        'prepare_commandline_%s' % scmd,
+        "prepare_commandline_%s" % scmd,
         init_cmd
     )
     parser.set_defaults(
@@ -170,8 +169,8 @@ def init_subcommand_parser(parent_parser, scmd):
             arg,
             help=h,
             action="append_const",
-            const=scmd,
-            dest='patch_through_args',
+            const=arg,
+            dest="patch_through_args",
         )
     return parser
 
@@ -208,6 +207,7 @@ def add_parser_run(parser):
 
 def init_cmd(args):
     cmd = [args.executor_path, args.scmd] + ARGS_ALWAYS.get(args.scmd, [])
+    logger.debug("patch_through_args: %s", args.patch_through_args)
     for pt_arg in args.patch_through_args:
         if pt_arg not in cmd:
             cmd.append(pt_arg)
@@ -219,7 +219,7 @@ def render_mounts(mounts, **kwds):
 
 
 def prepare_commandline_run(args):
-    mt_args = {'USERNAME': user_name, 'HOME': user_home}
+    mt_args = {"USERNAME": user_name, "HOME": user_home}
 
     cmd = init_cmd(args)
 
@@ -277,30 +277,30 @@ def prepare_commandline_run(args):
             os.listdir(ms)
 
     for mount in mounts:
-        cmd += ['-v', mount]
+        cmd += ["-v", mount]
 
     env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor_path, [])
     if ENV_VARS_SET_USERDOCKER_META_INFO:
         env_vars += [
-            'USERDOCKER=%s' % __version__,
-            'USERDOCKER_USER=%s' % user_name,
-            'USERDOCKER_UID=%d' % uid,
+            "USERDOCKER=%s" % __version__,
+            "USERDOCKER_USER=%s" % user_name,
+            "USERDOCKER_UID=%d" % uid,
         ]
     for env_var in env_vars:
         cmd += ['-e', env_var]
 
 
     if USER_IN_CONTAINER:
-        cmd += ['-u', '%d:%d' % (uid, gid)]
+        cmd += ["-u", "%d:%d" % (uid, gid)]
 
     for cap_drop in CAPS_DROP:
-        cmd += ['--drop-cap=%s' % cap_drop]
+        cmd += ["--drop-cap=%s" % cap_drop]
     for cap_add in CAPS_ADD:
-        cmd += ['--add-cap=%s' % cap_add]
+        cmd += ["--add-cap=%s" % cap_add]
     if PRIVILEGED:
-        cmd += ['--privileged']
+        cmd += ["--privileged"]
 
-    cmd.append('--')
+    cmd.append("--")
 
     img = args.image
     if ALLOWED_IMAGE_REGEXPS:
@@ -313,13 +313,13 @@ def prepare_commandline_run(args):
             )
 
     # pull image?
-    if RUN_PULL == 'default':
+    if RUN_PULL == "default":
         # just let `docker run` do its thing
         pass
-    elif RUN_PULL == 'always':
+    elif RUN_PULL == "always":
         # pull image
         exec_cmd([args.executor_path, 'pull', img], args)
-    elif RUN_PULL == 'never':
+    elif RUN_PULL == "never":
         # check if image is available locally
         tmp = subprocess.check_output([args.executor_path, 'images', '-q', img])
         if not tmp:
@@ -339,13 +339,12 @@ def prepare_commandline_run(args):
 
 
 def exec_cmd(cmd, args):
-    if not args.quiet:
-        print(
-            'would execute' if args.dry_run else 'executing',
-            'command:\n%s' % ' '.join(cmd)
-        )
-    if args.debug:
-        print('internal repr:', cmd)
+    logger.info(
+        '%s command: %s',
+        'would execute' if args.dry_run else 'executing',
+        ' '.join(cmd)
+    )
+    logger.debug('internal repr: %s', cmd)
 
     if args.dry_run:
         return 0
@@ -365,9 +364,26 @@ def exec_cmd(cmd, args):
     return ret
 
 
+def logger_setup(args):
+    logging.basicConfig(level=args.loglvl)
+    if logger.isEnabledFor(logging.DEBUG):
+        for _var in [
+            'uid', 'user_name', 'gid', 'group_name',
+            'gids', 'group_names',
+            'user_home'
+        ]:
+            logger.debug("%s = %r", _var, globals()[_var])
+
+        logger.debug('configs loaded: %s', configs_loaded)
+        for _var, _val in list(globals().items()):
+            if not _var.startswith('_') and _var.isupper():
+                logger.debug("%s = %r", _var, _val)
+
+
 def main():
     try:
         args = parse_args()
+        logger_setup(args)
         cmd = args.prepare_commandline(args)
         exec_cmd(cmd, args)
     except UserDockerException as e:

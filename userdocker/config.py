@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Admin default values for output of userdocker.
-QUIET = False
-DEBUG = True
+# Admin default value for userdocker log level:
+# ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+LOGLVL = 'DEBUG'
 
 # Available executors for users.
 EXECUTORS = {
