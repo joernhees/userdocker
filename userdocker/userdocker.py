@@ -95,6 +95,12 @@ class UserDockerException(Exception):
     pass
 
 
+def arg_type_no_flag(string):
+    if string.startswith('-'):
+        raise argparse.ArgumentTypeError('%r cannot start with "-"' % string)
+    return string
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description=__doc__.strip(),
@@ -200,6 +206,27 @@ def init_subcommand_parser(parent_parser, scmd):
     return parser
 
 
+def add_parser_images(parser):
+    sub_parser = init_subcommand_parser(parser, 'images')
+
+    sub_parser.add_argument(
+        "repo_tag",
+        help="optional repo[:tag] to restrict output",
+        nargs='?',
+        type=arg_type_no_flag,
+    )
+
+
+def add_parser_pull(parser):
+    sub_parser = init_subcommand_parser(parser, 'pull')
+
+    sub_parser.add_argument(
+        "name_tag_digest",
+        help="NAME[:TAG|@DIGEST] to pull",
+        type=arg_type_no_flag,
+    )
+
+
 def add_parser_run(parser):
     parser_run = init_subcommand_parser(parser, 'run')
 
@@ -221,6 +248,7 @@ def add_parser_run(parser):
     parser_run.add_argument(
         "image",
         help="the image to run",
+        type=arg_type_no_flag,
     )
 
     parser_run.add_argument(
@@ -239,10 +267,6 @@ def init_cmd(args):
     return cmd
 
 
-def render_mounts(mounts, **kwds):
-    return [m.format(**kwds) for m in mounts]
-
-
 def prepare_commandline_dockviz(args):
     # just run dockviz
     return [
@@ -250,6 +274,26 @@ def prepare_commandline_dockviz(args):
         "-v", "/var/run/docker.sock:/var/run/docker.sock",
         "nate/dockviz", "images", "--tree"
     ]
+
+
+def prepare_commandline_images(args):
+    cmd = init_cmd(args)
+    if args.repo_tag:
+        cmd.append("--")
+        cmd.append(args.repo_tag)
+    return cmd
+
+
+def prepare_commandline_pull(args):
+    cmd = init_cmd(args)
+    if args.name_tag_digest:
+        cmd.append("--")
+        cmd.append(args.name_tag_digest)
+    return cmd
+
+
+def render_mounts(mounts, **kwds):
+    return [m.format(**kwds) for m in mounts]
 
 
 def prepare_commandline_run(args):
