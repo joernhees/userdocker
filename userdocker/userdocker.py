@@ -20,9 +20,11 @@ import logging
 
 __version__ = '1.0.0-dev'
 
+
 logger = logging.getLogger('userdocker')
 
 if not os.getenv('SUDO_UID'):
+    logging.basicConfig()
     logger.warning("%s should be executed via sudo", sys.argv[0])
 uid = os.getuid()
 uid = int(os.getenv('SUDO_UID', uid))
@@ -110,8 +112,7 @@ def parse_args():
     )
     debug_group.add_argument(
         "--debug",
-        help="even more output for invoked docker command (use as first flag to"
-             "get config debug)",
+        help="debug and config output for invoked docker command",
         action="store_const",
         dest="loglvl",
         const=logging.DEBUG,
@@ -161,15 +162,37 @@ def init_subcommand_parser(parent_parser, scmd):
         patch_through_args=[],
     )
 
+    # patch args through
+    _args_seen = []
     for arg in ARGS_AVAILABLE.get(scmd, []) + ARGS_ALWAYS.get(scmd, []):
+        if isinstance(arg, str):
+            args = [arg]
+        elif isinstance(arg, (list, tuple, set)):
+            args = list(arg)
+        else:
+            raise NotImplementedError(
+                "Cannot understand admin defined ARG %s for command %s" % (
+                    arg, scmd))
+
+        # remove dups (e.g. from being in AVAILABLE and ALWAYS)
+        args = [arg for arg in args if arg not in _args_seen]
+        _args_seen.extend(args)
+
+        # make sure arg starts with - and doesn't contain = or ' '
+        for arg in args:
+            if not arg.startswith('-') or '=' in arg or ' ' in arg:
+                raise NotImplementedError(
+                    "Cannot understand admin defined ARG %s for command %s" % (
+                        arg, scmd))
+
         h = "see docker help"
-        if arg in ARGS_ALWAYS.get(scmd, []):
+        if set(args) & set(ARGS_ALWAYS.get(scmd, [])):
             h += ' (enforced by admin)'
         parser.add_argument(
-            arg,
+            *args,
             help=h,
             action="append_const",
-            const=arg,
+            const=args[0],
             dest="patch_through_args",
         )
     return parser
@@ -365,19 +388,22 @@ def exec_cmd(cmd, args):
 
 
 def logger_setup(args):
-    logging.basicConfig(level=args.loglvl)
+    logging.basicConfig()
+    logging.root.setLevel(args.loglvl)
     if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('global variables:')
         for _var in [
             'uid', 'user_name', 'gid', 'group_name',
             'gids', 'group_names',
             'user_home'
         ]:
-            logger.debug("%s = %r", _var, globals()[_var])
+            logger.debug("  %s = %r", _var, globals()[_var])
 
-        logger.debug('configs loaded: %s', configs_loaded)
+        logger.debug('configs loaded: %s\n', configs_loaded)
+        logger.debug('resulting configs:')
         for _var, _val in list(globals().items()):
             if not _var.startswith('_') and _var.isupper():
-                logger.debug("%s = %r", _var, _val)
+                logger.debug("  %s = %r", _var, _val)
 
 
 def main():

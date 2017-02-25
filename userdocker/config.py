@@ -2,7 +2,7 @@
 
 # Admin default value for userdocker log level:
 # ['DEBUG', 'INFO', 'WARNING', 'ERROR']
-LOGLVL = 'DEBUG'
+LOGLVL = 'INFO'
 
 # Available executors for users.
 EXECUTORS = {
@@ -14,15 +14,17 @@ EXECUTOR_DEFAULT = 'docker'
 # The following allows you to specify which docker top level commands a user can
 # run at all (still restricted by the following settings):
 ALLOWED_SUBCOMMANDS = [
-    'run',
-    'ps',
+    'dockviz',  # tree viz of images
     'images',
-    'pull',
     'load',
+    'ps',
+    'pull',
+    'run',
+    'version',
 ]
 
 # Arguments (more precisely simple flags) that you want to make available to the
-# user or enforce. Do not include args that are handled below!
+# user or enforce. Do not include args that are handled below (e.g. run -v)!
 # The following arguments will always be injected for the corresponding command:
 ARGS_ALWAYS = {
     'run': [
@@ -32,13 +34,30 @@ ARGS_ALWAYS = {
     ],
 }
 # The following arguments are available to the user for the given command:
+# (aliases are supported as tuples below, but not in ARGS_ALWAYS)
 ARGS_AVAILABLE = {
-    'run': [
-        '-t',
-        '-i',
+    'images': [
+        ('-a', '--all'),
+        '--digests',
+        '--no-trunc',
+        ('-q', '--quiet'),
+    ],
+    'load': [
+        ('-q', '--quiet'),
     ],
     'ps': [
-        '-a',
+        ('-a', '--all'),
+        ('-l', '--latest'),
+        ('-s', '--size'),
+        ('-q', '--quiet'),
+        '--no-trunc',
+    ],
+    'pull': [
+        ('-a', '--all-tags'),
+    ],
+    'run': [
+        ('-t', '--tty'),
+        ('-i', '--interactive'),
     ],
 }
 
