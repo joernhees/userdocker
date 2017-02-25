@@ -387,8 +387,8 @@ def prepare_commandline_run(args):
                 break
         else:
             raise UserDockerException(
-                "ERROR: image not in allowed images: %s" % img
-            )
+                "ERROR: image %s not in allowed image regexps: %s" % (
+                    img, ALLOWED_IMAGE_REGEXPS))
 
     # pull image?
     if RUN_PULL == "default":

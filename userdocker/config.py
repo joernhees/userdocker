@@ -16,9 +16,9 @@ EXECUTOR_DEFAULT = 'docker'
 ALLOWED_SUBCOMMANDS = [
     'dockviz',  # tree visualization of images
     'images',
-    'load',
+    # 'load',  # see RUN_PULL as well
     'ps',
-    'pull',
+    # 'pull',  # see RUN_PULL as well
     'run',
     'version',
 ]
@@ -91,7 +91,7 @@ PROBE_USED_MOUNTS = True
 
 # User is allowed to run an image if any of the following regexps match it
 ALLOWED_IMAGE_REGEXPS = [
-    '.*',
+    '^[A-Za-z_].*',
 ]
 
 # Normally docker run automatically pulls images that aren't available locally.
