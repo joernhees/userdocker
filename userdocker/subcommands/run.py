@@ -141,9 +141,9 @@ def prepare_commandline_run(args):
         cmd += ["-u", "%d:%d" % (uid, gid)]
 
     for cap_drop in CAPS_DROP:
-        cmd += ["--drop-cap=%s" % cap_drop]
+        cmd += ["--cap-drop=%s" % cap_drop]
     for cap_add in CAPS_ADD:
-        cmd += ["--add-cap=%s" % cap_add]
+        cmd += ["--cap-add=%s" % cap_add]
     if PRIVILEGED:
         cmd += ["--privileged"]
 
