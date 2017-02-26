@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+
 from ..helpers.cmd import init_cmd
 from ..helpers.parser import arg_type_no_flag
 from ..helpers.parser import init_subcommand_parser
 
 
-def add_parser_images(parser):
+def parser_images(parser):
     sub_parser = init_subcommand_parser(parser, 'images')
 
     sub_parser.add_argument(

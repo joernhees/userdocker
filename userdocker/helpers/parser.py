@@ -2,8 +2,8 @@
 
 import argparse
 
-from ..config import ARGS_AVAILABLE, ARGS_ALWAYS
-from .cmd import init_cmd
+from ..config import ARGS_AVAILABLE
+from ..config import ARGS_ALWAYS
 
 
 def arg_type_no_flag(string):
@@ -58,3 +58,5 @@ def init_subcommand_parser(parent_parser, scmd):
         )
 
     return parser
+
+

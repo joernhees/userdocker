@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import argparse
 
+import argparse
 import os
 import re
 import subprocess
@@ -22,15 +22,15 @@ from ..config import CAPS_ADD
 from ..config import PRIVILEGED
 from ..config import ALLOWED_IMAGE_REGEXPS
 from ..config import RUN_PULL
+from ..execute import exec_cmd
 from ..helpers.cmd import init_cmd
-from ..helpers.cmd import exec_cmd
 from ..helpers.exceptions import UserDockerException
 from ..helpers.parser import arg_type_no_flag
 from ..helpers.parser import init_subcommand_parser
 from .. import __version__
 
 
-def add_parser_run(parser):
+def parser_run(parser):
     sub_parser = init_subcommand_parser(parser, 'run')
 
     sub_parser.add_argument(
