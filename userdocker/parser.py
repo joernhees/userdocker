@@ -18,6 +18,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description=__doc__.strip(),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=False,
     )
 
     debug_group = parser.add_mutually_exclusive_group()

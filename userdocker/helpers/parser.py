@@ -15,7 +15,8 @@ def arg_type_no_flag(string):
 def init_subcommand_parser(parent_parser, scmd):
     parser = parent_parser.add_parser(
         scmd,
-        help='Lets a user run "docker %s ..." command' % scmd
+        help='Lets a user run "docker %s ..." command' % scmd,
+        allow_abbrev=False,
     )
     parser.set_defaults(
         patch_through_args=[],
