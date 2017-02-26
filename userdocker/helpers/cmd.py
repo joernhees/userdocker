@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .logger import logger
 from ..config import ARGS_ALWAYS
+from .logger import logger
 
 
 def init_cmd(args):

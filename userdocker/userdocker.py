@@ -4,12 +4,12 @@ import logging
 import os
 import sys
 
+from .commandline import prepare_commandline
+from .execute import exec_cmd
 from .helpers.logger import logger
 from .helpers.logger import logger_setup
 from .helpers.exceptions import UserDockerException
 from .parser import parse_args
-from .commandline import prepare_commandline
-from .execute import exec_cmd
 
 
 if not os.getenv('SUDO_UID'):

@@ -2,8 +2,8 @@
 
 import argparse
 
-from ..config import ARGS_AVAILABLE
 from ..config import ARGS_ALWAYS
+from ..config import ARGS_AVAILABLE
 
 
 def arg_type_no_flag(string):

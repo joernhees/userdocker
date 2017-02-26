@@ -4,10 +4,10 @@ import argparse
 import logging
 
 from . import __doc__
-from .config import LOGLVL
-from .config import EXECUTORS
-from .config import EXECUTOR_DEFAULT
 from .config import ALLOWED_SUBCOMMANDS
+from .config import EXECUTOR_DEFAULT
+from .config import EXECUTORS
+from .config import LOGLVL
 from .helpers.parser import init_subcommand_parser
 
 # dispatch specific specific_parsers to those defined in subcommands package
