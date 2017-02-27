@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import sys
 
 from . import __doc__
 from .config import ALLOWED_SUBCOMMANDS
@@ -15,11 +16,13 @@ from .subcommands import specific_parsers
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description=__doc__.strip(),
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        allow_abbrev=False,
-    )
+    kwds = {
+        "description": __doc__.strip(),
+        "formatter_class": argparse.ArgumentDefaultsHelpFormatter,
+    }
+    if sys.version_info > (3, 5):
+        kwds['allow_abbrev'] = False
+    parser = argparse.ArgumentParser(**kwds)
 
     debug_group = parser.add_mutually_exclusive_group()
     debug_group.add_argument(

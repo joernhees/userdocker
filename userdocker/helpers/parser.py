@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import sys
 
 from ..config import ARGS_ALWAYS
 from ..config import ARGS_AVAILABLE
@@ -13,11 +14,12 @@ def arg_type_no_flag(string):
 
 
 def init_subcommand_parser(parent_parser, scmd):
-    parser = parent_parser.add_parser(
-        scmd,
-        help='Lets a user run "docker %s ..." command' % scmd,
-        allow_abbrev=False,
-    )
+    kwds = {
+        "help": 'Lets a user run "docker %s ..." command' % scmd,
+    }
+    if sys.version_info > (3, 5):
+        kwds['allow_abbrev'] = False
+    parser = parent_parser.add_parser(scmd, **kwds)
     parser.set_defaults(
         patch_through_args=[],
     )
@@ -50,14 +52,12 @@ def init_subcommand_parser(parent_parser, scmd):
         h = "see docker help"
         if set(args) & set(ARGS_ALWAYS.get(scmd, [])):
             h += ' (enforced by admin)'
-        parser.add_argument(
-            *args,
-            help=h,
-            action="append_const",
-            const=args[0],
-            dest="patch_through_args",
-        )
+        kwds = {
+            "help": h,
+            "action": "append_const",
+            "const": args[0],
+            "dest": "patch_through_args",
+        }
+        parser.add_argument(*args, **kwds)
 
     return parser
-
-
