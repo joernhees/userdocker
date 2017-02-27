@@ -6,6 +6,7 @@ import re
 import subprocess
 
 from .. import __version__
+from ..config import ALLOWED_PUBLISH_PORTS_ALL
 from ..config import ALLOWED_IMAGE_REGEXPS
 from ..config import CAPS_ADD
 from ..config import CAPS_DROP
@@ -45,6 +46,13 @@ def parser_run(parser):
             action="append",
             dest="volumes",
             default=[],
+        )
+
+    if ALLOWED_PUBLISH_PORTS_ALL:
+        sub_parser.add_argument(
+            "-P", "--publish-all",
+            help="Publish all exposed ports to random ports",
+            action="store_true",
         )
 
     sub_parser.add_argument(
@@ -133,6 +141,9 @@ def prepare_commandline_run(args):
 
     for mount in mounts:
         cmd += ["-v", mount]
+
+    if args.publish_all:
+        cmd += ["-P"]
 
     env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor_path, [])
     if ENV_VARS_SET_USERDOCKER_META_INFO:

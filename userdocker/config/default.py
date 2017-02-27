@@ -113,6 +113,13 @@ CAPS_DROP = ['ALL']
 CAPS_ADD = []
 PRIVILEGED = False
 
+# User ability to publish ports
+# The ALLOWED_PUBLISH_PORTS_ALL allows the user to use the -P flag, which
+# publishes all ports that are EXPOSEd in the container to random host ports
+# (non priv range).
+# Notice that by default such ports are world accessible, so in case you want to
+# protect them, make sure to have (a docker compatible) iptables in place.
+ALLOWED_PUBLISH_PORTS_ALL = True
 
 # Environment vars to set for the container:
 ENV_VARS = []
