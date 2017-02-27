@@ -26,7 +26,6 @@ from ..config import user_name
 from ..execute import exec_cmd
 from ..helpers.cmd import init_cmd
 from ..helpers.exceptions import UserDockerException
-from ..helpers.parser import arg_type_no_flag
 from ..helpers.parser import init_subcommand_parser
 
 
@@ -51,7 +50,6 @@ def parser_run(parser):
     sub_parser.add_argument(
         "image",
         help="the image to run",
-        type=arg_type_no_flag,
     )
 
     sub_parser.add_argument(

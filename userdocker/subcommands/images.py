@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from ..helpers.cmd import init_cmd
-from ..helpers.parser import arg_type_no_flag
 from ..helpers.parser import init_subcommand_parser
 
 
@@ -12,7 +11,6 @@ def parser_images(parser):
         "repo_tag",
         help="optional repo[:tag] to restrict output",
         nargs='?',
-        type=arg_type_no_flag,
     )
 
 

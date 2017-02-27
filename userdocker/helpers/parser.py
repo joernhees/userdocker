@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import argparse
 import sys
 
 from ..config import ARGS_ALWAYS
 from ..config import ARGS_AVAILABLE
-
-
-def arg_type_no_flag(string):
-    if string.startswith('-'):
-        raise argparse.ArgumentTypeError('%r cannot start with "-"' % string)
-    return string
 
 
 def init_subcommand_parser(parent_parser, scmd):

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from ..helpers.cmd import init_cmd
-from ..helpers.parser import arg_type_no_flag
 from ..helpers.parser import init_subcommand_parser
 
 
@@ -11,7 +10,6 @@ def parser_pull(parser):
     sub_parser.add_argument(
         "name_tag_digest",
         help="NAME[:TAG|@DIGEST] to pull",
-        type=arg_type_no_flag,
     )
 
 
