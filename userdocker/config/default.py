@@ -58,6 +58,7 @@ ARGS_AVAILABLE = {
     'run': [
         ('-t', '--tty'),
         ('-i', '--interactive'),
+        '--read-only',
     ],
 }
 

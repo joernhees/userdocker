@@ -48,6 +48,16 @@ def parser_run(parser):
         )
 
     sub_parser.add_argument(
+        "--entrypoint",
+        help="Overwrite the default ENTRYPOINT of the image",
+    )
+
+    sub_parser.add_argument(
+        "-w", "--workdir",
+        help="Working directory inside the container",
+    )
+
+    sub_parser.add_argument(
         "image",
         help="the image to run",
     )
@@ -144,6 +154,11 @@ def prepare_commandline_run(args):
         cmd += ["--cap-add=%s" % cap_add]
     if PRIVILEGED:
         cmd += ["--privileged"]
+
+    if args.workdir:
+        cmd += ["-w", args.workdir]
+    if args.entrypoint:
+        cmd += ["--entrypoint", args.entrypoint]
 
     cmd.append("--")
 
