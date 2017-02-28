@@ -1,5 +1,42 @@
 # -*- coding: utf-8 -*-
 
+################################################################################
+# WARNING:
+# /etc/userdocker/default.py will not be loaded at runtime, but is meant as a
+# template! It will be overwritten by future installs/updates!
+# Copy this file to /etc/docker/config.py, then edit!
+#
+# The order of config files is (if existing):
+# - package defaults
+# - /etc/userdocker/config.py
+# - /etc/userdocker/group/config_<prio>_<group_name>.py (see note below)
+# - /etc/userdocker/gid/config_<prio>_<gid>.py (see note below)
+# - /etc/userdocker/user/config_<user_name>.py
+# - /etc/userdocker/uid/config_<uid>.py
+#
+# All config files are executed in place, allowing later config files to
+# override or modify previous ones. The above might sound complicated, but just
+# start with a /etc/userdocker/config.py and then define exceptions later.
+#
+# As a user can be in several groups, the group configs include a 2 digit prio.
+# On execution, we will get all groups for the user, collect the corresponding
+# config files matching those groups if they exist and load all collected
+# config files sorted ascending by prio. Lowest prio is 00 (loaded first),
+# highest prio is 99 (loaded last).
+# Afterwards the same is done for gid config files.
+
+# Example: if a user is in groups "adm" and "udocker" and an admin created the
+# config files config_99_adm.py and config_50_udocker.py, then the execution
+# order is:
+# - package defaults
+# - /etc/userdocker/group.py
+# - /etc/userdocker/group/config_50_udocker.py
+# - /etc/userdocker/group/config_99_adm.py
+# - ...
+# This means that config_99_adm.py can grant users in group adm a lot more
+# permissions (reliably), even if they are also in the udocker group.
+################################################################################
+
 # Admin default value for userdocker log level:
 # ['DEBUG', 'INFO', 'WARNING', 'ERROR']
 LOGLVL = 'INFO'

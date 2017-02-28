@@ -53,6 +53,7 @@ for _g in grp.getgrall():
 del user_pwd
 
 
+# see default.py for explanation on config load order
 from .default import *
 configs_loaded = ['default']
 _cd = '/etc/userdocker/'
