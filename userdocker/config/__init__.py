@@ -44,11 +44,12 @@ user_pwd = pwd.getpwuid(uid)
 user_name = user_pwd.pw_name
 user_home = user_pwd.pw_dir
 group_name = grp.getgrgid(gid).gr_name
-group_names, gids = zip(*[
-    (_g.gr_name, _g.gr_gid)
-    for _g in grp.getgrall()
-    if user_name in _g.gr_mem
-])
+group_names = []
+gids = []
+for _g in grp.getgrall():
+    if user_name in _g.gr_mem:
+        group_names.append(_g.gr_name)
+        gids.append(_g.gr_gid)
 del user_pwd
 
 
