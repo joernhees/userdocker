@@ -14,7 +14,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='userdocker',
     version=__version__,
-    description=__doc__,
+    description=__doc__.strip().splitlines()[0].strip(),
     long_description=long_description,
     url='https://github.com/joernhees/userdocker',
     author='Jörn Hees',

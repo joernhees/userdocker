@@ -113,7 +113,7 @@ Copy the default config to ``/etc/userdocker/config.py``, then edit the file.
 The config contains tons of comments and explanations to help you make the right
 decisions for your scenario.
 
-:: code-block:: bash
+.. code-block:: bash
 
     sudo cp /etc/userdocker/default.py /etc/userdocker/config.py
 
@@ -136,7 +136,7 @@ In case you want to grant userdocker rights only to some users, we suggest to
 add a ``userdocker`` group and then allow users in that group to execute
 ``sudo userdocker``:
 
-:: code-block:: bash
+.. code-block:: bash
 
     # add a group called userdocker:
     sudo addgroup userdocker
@@ -167,3 +167,4 @@ some nodes in your cluster, you can use the Host\_List field:
 ::
 
     %userdocker node1,node2,node4=(root) /usr/local/bin/userdocker
+
