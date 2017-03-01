@@ -4,6 +4,12 @@ Userdocker
 Userdocker is a wrapper that allows admins to grant restricted docker
 commandline access to users.
 
+.. note::
+
+    Userdocker is currently in ALPHA state. Testing, reviewing and feedback are
+    very welcome. Use with caution!
+
+
 Userdocker is aimed towards scientific high performance computing and cluster
 setups, as they exist in most universities or research groups. Often, such
 scientific computations have peculiar dependencies that are difficult to satisfy
