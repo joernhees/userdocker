@@ -5,6 +5,7 @@ import logging
 import sys
 
 from . import __doc__
+from . import __version__
 from .config import ALLOWED_SUBCOMMANDS
 from .config import EXECUTOR_DEFAULT
 from .config import EXECUTORS
@@ -23,6 +24,12 @@ def parse_args():
     if sys.version_info > (3, 5):
         kwds['allow_abbrev'] = False
     parser = argparse.ArgumentParser(**kwds)
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version='%(prog)s ' + __version__
+    )
 
     debug_group = parser.add_mutually_exclusive_group()
     debug_group.add_argument(
@@ -56,7 +63,7 @@ def parse_args():
     )
 
     # individual commands will be sub-specific_parsers
-    subparsers = parser.add_subparsers(dest="scmd")
+    subparsers = parser.add_subparsers(dest="subcommand")
     subparsers.required = True
 
     for scmd in ALLOWED_SUBCOMMANDS:

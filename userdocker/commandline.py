@@ -7,6 +7,6 @@ from .subcommands import specific_commandline_preparers
 
 
 def prepare_commandline(args):
-    scmd = args.scmd
+    scmd = args.subcommand
     prep_cmdline = specific_commandline_preparers.get(scmd, init_cmd)
     return prep_cmdline(args)
