@@ -53,9 +53,9 @@ EXECUTOR_DEFAULT = 'docker'
 ALLOWED_SUBCOMMANDS = [
     'dockviz',  # tree visualization of images
     'images',
-    # 'load',  # see RUN_PULL as well
+    'load',  # see RUN_PULL as well
     'ps',
-    # 'pull',  # see RUN_PULL as well
+    'pull',  # see RUN_PULL as well
     'run',
     'version',
 ]
