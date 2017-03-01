@@ -145,7 +145,7 @@ def prepare_commandline_run(args):
     if args.publish_all:
         cmd += ["-P"]
 
-    env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor_path, [])
+    env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor, [])
     if ENV_VARS_SET_USERDOCKER_META_INFO:
         env_vars += [
             "USERDOCKER=%s" % __version__,
