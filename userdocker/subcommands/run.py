@@ -174,6 +174,10 @@ def prepare_commandline_run(args):
     cmd.append("--")
 
     img = args.image
+    if ":" not in img and "@" not in img:
+        # user didn't explicitly set a tag or digest, append ":latest"
+        img += ":latest"
+
     if ALLOWED_IMAGE_REGEXPS:
         for air in ALLOWED_IMAGE_REGEXPS:
             if re.match(air, img):
