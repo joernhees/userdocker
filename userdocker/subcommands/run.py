@@ -3,7 +3,6 @@
 import argparse
 import os
 import re
-import subprocess
 
 from .. import __version__
 from ..config import ALLOWED_PUBLISH_PORTS_ALL
@@ -196,7 +195,11 @@ def prepare_commandline_run(args):
         exec_cmd([args.executor_path, 'pull', img], args)
     elif RUN_PULL == "never":
         # check if image is available locally
-        tmp = subprocess.check_output([args.executor_path, 'images', '-q', img])
+        tmp = exec_cmd(
+            [args.executor_path, 'images', '-q', img],
+            args,
+            return_status=False
+        )
         if not tmp:
             raise UserDockerException(
                 "ERROR: you can only use locally available images, but %s could"
