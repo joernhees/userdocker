@@ -170,7 +170,9 @@ def prepare_commandline_run(args):
     if args.entrypoint:
         cmd += ["--entrypoint", args.entrypoint]
 
-    cmd.append("--")
+    # additional injection protection, deactivated for now due to nvidia-docker
+    # unability to handle this
+    # cmd.append("--")
 
     img = args.image
     if ":" not in img and "@" not in img:
