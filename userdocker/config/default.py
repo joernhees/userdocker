@@ -163,7 +163,10 @@ PRIVILEGED = False
 ALLOWED_PUBLISH_PORTS_ALL = True
 
 # Environment vars to set for the container:
-ENV_VARS = []
+ENV_VARS = [
+    # sets HOME env var to user's home
+    'HOME=' + user_home,
+]
 ENV_VARS_EXT = {
     'nvidia-docker': [
         'NCCL_TOPOLOGY=CUBEMESH',
