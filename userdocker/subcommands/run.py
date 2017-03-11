@@ -21,7 +21,6 @@ from ..config import VOLUME_MOUNTS_AVAILABLE
 from ..config import VOLUME_MOUNTS_DEFAULT
 from ..config import gid
 from ..config import uid
-from ..config import user_home
 from ..config import user_name
 from ..execute import exec_cmd
 from ..helpers.cmd import init_cmd
@@ -76,25 +75,17 @@ def parser_run(parser):
     )
 
 
-def render_mounts(mounts, **kwds):
-    return [m.format(**kwds) for m in mounts]
-
-
 def prepare_commandline_run(args):
-    mt_args = {"USERNAME": user_name, "HOME": user_home}
-
     cmd = init_cmd(args)
 
     mounts = []
-    mounts_always = render_mounts(VOLUME_MOUNTS_ALWAYS, **mt_args)
-    mounts_default = render_mounts(VOLUME_MOUNTS_DEFAULT, **mt_args)
-    mounts_available = mounts_always + mounts_default + \
-        render_mounts(VOLUME_MOUNTS_AVAILABLE, **mt_args)
+    mounts_available = \
+        VOLUME_MOUNTS_ALWAYS + VOLUME_MOUNTS_DEFAULT + VOLUME_MOUNTS_AVAILABLE
 
-    mounts += mounts_always
+    mounts += VOLUME_MOUNTS_ALWAYS
 
     if not args.no_default_mounts:
-        mounts += render_mounts(VOLUME_MOUNTS_DEFAULT, **mt_args)
+        mounts += VOLUME_MOUNTS_DEFAULT
 
     for user_mount in args.volumes:
         if user_mount in mounts:

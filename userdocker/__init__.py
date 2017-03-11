@@ -7,4 +7,4 @@ Feedback welcome:
 https://github.com/joernhees/userdocker
 """
 
-__version__ = '1.0.2-dev'
+__version__ = '2.0.0-dev'

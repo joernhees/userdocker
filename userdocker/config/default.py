@@ -6,6 +6,11 @@
 # template! It will be overwritten by future installs/updates!
 # Copy this file to /etc/docker/config.py, then edit!
 #
+# The following (python) variables may be used throughout config files (see
+# VOLUME_MOUNTS_DEFAULT or ENV_VARS for an example):
+from . import uid, gid, user_name, group_name, user_home
+# (if you like, you can remove the line without any effect)
+#
 # The order of config files is (if existing):
 # - package defaults
 # - /etc/userdocker/config.py
@@ -24,7 +29,7 @@
 # config files sorted ascending by prio. Lowest prio is 00 (loaded first),
 # highest prio is 99 (loaded last).
 # Afterwards the same is done for gid config files.
-
+#
 # Example: if a user is in groups "adm" and "udocker" and an admin created the
 # config files config_99_adm.py and config_50_udocker.py, then the execution
 # order is:
@@ -107,19 +112,18 @@ ARGS_AVAILABLE = {
 # - VOLUME_MOUNTS_DEFAULT will be added unless the user specifies the
 #   --no-default-mounts option
 # - The user can mount any of the above explicitly with "-v", redundancy is ok
-# - You (admin) can use "{USER}" and "{HOME}" vars in mount specs
 # - You (admin) can specify whatever usually comes after the "-v" arg in
 #   "host_path:container_path:flags" form. If you do not specify a target, the
 #   user may select one, which is potentially unsafe. If you don't specify a
 #   flag, the user can append a "ro" to guard herself (even for
 #   VOLUME_MOUNTS_ALWAYS).
 # Example:
-# VOLUME_MOUNTS_DEFAULT = ["/netscratch:/netscratch", "/data:/input:ro"]
+# VOLUME_MOUNTS_DEFAULT = ['/netscratch:/netscratch', '/data:/input:ro']
 VOLUME_MOUNTS_ALWAYS = []
 VOLUME_MOUNTS_AVAILABLE = []
 VOLUME_MOUNTS_DEFAULT = [
-    # default mount user home
-    "{HOME}:{HOME}",
+    # default mount user's home
+    user_home + ':' + user_home,
 ]
 
 # This setting issues a listdir for used host dirs in mounts.
