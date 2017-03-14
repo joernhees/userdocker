@@ -18,6 +18,10 @@ if not os.getenv('SUDO_UID'):
 
 
 def parse_and_build_commandline():
+    if os.getenv('DOCKER_HOST'):
+        raise UserDockerException(
+            'ERROR: DOCKER_HOST env var not supported yet'
+        )
     args = parse_args()
     logger_setup(args)
     cmd = prepare_commandline(args)
