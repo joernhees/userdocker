@@ -185,13 +185,12 @@ def prepare_commandline_run(args):
         pass
     elif RUN_PULL == "always":
         # pull image
-        exec_cmd([args.executor_path, 'pull', img], args)
+        exec_cmd([args.executor_path, 'pull', img], dry_run=args.dry_run)
     elif RUN_PULL == "never":
         # check if image is available locally
         tmp = exec_cmd(
             [args.executor_path, 'images', '-q', img],
-            args,
-            return_status=False
+            return_status=False,
         )
         if not tmp:
             raise UserDockerException(

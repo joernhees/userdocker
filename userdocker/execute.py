@@ -8,15 +8,15 @@ from .helpers.exceptions import UserDockerException
 from .helpers.logger import logger
 
 
-def exec_cmd(cmd, args, return_status=True):
+def exec_cmd(cmd, dry_run=False, return_status=True):
     logger.info(
         '%s command: %s',
-        'would execute' if args.dry_run else 'executing',
+        'would execute' if dry_run else 'executing',
         ' '.join(cmd)
     )
     logger.debug('internal repr: %s', cmd)
 
-    if args.dry_run:
+    if dry_run:
         return 0
 
     if not os.path.exists(cmd[0]):

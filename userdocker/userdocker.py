@@ -31,7 +31,7 @@ def parse_and_build_commandline():
 def main():
     try:
         args, cmd = parse_and_build_commandline()
-        exec_cmd(cmd, args)
+        exec_cmd(cmd, dry_run=args.dry_run)
     except UserDockerException as e:
         print(e, file=sys.stderr)
         sys.exit(1)
