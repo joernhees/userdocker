@@ -177,3 +177,22 @@ ENV_VARS_EXT = {
 # container. They might in future be used to allow users to interact with their
 # previously started containers.
 ENV_VARS_SET_USERDOCKER_META_INFO = True
+
+
+# nvidia docker specific settings
+# The following settings allow to restrict the way users can use nvidia GPUs
+# in their container. The NV_ALLOWED_GPUS setting allows you to only make a
+# subset of GPUs available to users. Setting this to [] or None will result in
+# nvidia-docker to always fail as no GPUs are available. It might be less
+# confusing for users to remove the nvidia-docker executor in those cases!
+# GPUs on which more than NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED MB of memory is
+# used will be marked as unavailable.
+# If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPU used in any other container
+# is unavailable as well.
+NV_ALLOWED_GPUS = 'ALL'  # otherwise a list like [1, 3]. [] for none.
+NV_DEFAULT_GPU_COUNT_RESERVATION = 1
+NV_MAX_GPU_COUNT_RESERVATION = -1
+NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED = 0
+NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION = True
+
+#NV_GPU=0,1,2,3

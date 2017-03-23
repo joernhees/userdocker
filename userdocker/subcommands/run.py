@@ -5,13 +5,16 @@ import os
 import re
 
 from .. import __version__
-from ..config import ALLOWED_PUBLISH_PORTS_ALL
 from ..config import ALLOWED_IMAGE_REGEXPS
+from ..config import ALLOWED_PUBLISH_PORTS_ALL
 from ..config import CAPS_ADD
 from ..config import CAPS_DROP
 from ..config import ENV_VARS
 from ..config import ENV_VARS_EXT
 from ..config import ENV_VARS_SET_USERDOCKER_META_INFO
+from ..config import NV_ALLOWED_GPUS
+from ..config import NV_DEFAULT_GPU_COUNT_RESERVATION
+from ..config import NV_MAX_GPU_COUNT_RESERVATION
 from ..config import PRIVILEGED
 from ..config import PROBE_USED_MOUNTS
 from ..config import RUN_PULL
@@ -25,6 +28,8 @@ from ..config import user_name
 from ..execute import exec_cmd
 from ..helpers.cmd import init_cmd
 from ..helpers.exceptions import UserDockerException
+from ..helpers.logger import logger
+from ..helpers.nvidia import nvidia_get_available_gpus
 from ..helpers.parser import init_subcommand_parser
 
 
@@ -73,6 +78,69 @@ def parser_run(parser):
         help="arguments passed to the image",
         nargs=argparse.REMAINDER
     )
+
+
+def prepare_nvidia_docker_run(args):
+    # mainly handles GPU arbitration via ENV var for nvidia-docker
+    # note that these are ENV vars for the command, not the container
+
+    if os.getenv('NV_HOST'):
+        raise UserDockerException('ERROR: NV_HOST env var not supported yet')
+
+    # check if allowed
+    if not NV_ALLOWED_GPUS:
+        raise UserDockerException(
+            "ERROR: No GPUs available due to admin setting."
+        )
+
+    nv_gpus = [g.strip() for g in os.getenv('NV_GPU', '').split(',')]
+    if nv_gpus:
+        # the user has set NV_GPU, just check if it's ok
+        try:
+            nv_gpus = [int(gpu) for gpu in nv_gpus]
+        except ValueError as e:
+            raise UserDockerException(
+                "ERROR: Can't parse NV_GPU, use index notation: %s" % e
+            )
+
+        if not (
+                NV_ALLOWED_GPUS == 'ALL'
+                or all(gpu in NV_ALLOWED_GPUS for gpu in nv_gpus)):
+            raise UserDockerException(
+                "ERROR: Access to at least one specified NV_GPU denied by "
+                "admin. Available GPUs: %r" % (NV_ALLOWED_GPUS,)
+            )
+
+        # check if in bounds
+        if len(nv_gpus) > NV_MAX_GPU_COUNT_RESERVATION:
+            raise UserDockerException(
+                "ERROR: Number of requested GPUs > %d (admin limit)" % (
+                    NV_MAX_GPU_COUNT_RESERVATION,)
+            )
+
+        # check if available
+        gpus_available = nvidia_get_available_gpus(args.executor_path)
+        for g in nv_gpus:
+            if g not in gpus_available:
+                raise UserDockerException(
+                    "ERROR: GPU %d is currently not available: " % g
+                )
+    else:
+        # NV_GPU wasn't set, use admin defaults, tell user
+        gpu_default = NV_DEFAULT_GPU_COUNT_RESERVATION
+        logger.info(
+            "NV_GPU environment variable not set, trying to acquire admin "
+            "default of %d GPUs" % gpu_default
+        )
+        gpus_available = nvidia_get_available_gpus(args.executor_path)
+        gpus = gpus_available[:gpu_default]
+        if len(gpus) < gpu_default:
+            raise UserDockerException(
+                "Could not find %d available GPU(s)" % gpu_default
+            )
+        gpu_env = ",".join([str(g) for g in gpus])
+        logger.info("Setting NV_GPU=%s" % gpu_env)
+        os.environ['NV_GPU'] = gpu_env
 
 
 def prepare_commandline_run(args):
@@ -134,6 +202,9 @@ def prepare_commandline_run(args):
 
     if args.publish_all:
         cmd += ["-P"]
+
+    if args.executor == 'nvidia-docker':
+        prepare_nvidia_docker_run(args)
 
     env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor, [])
     if ENV_VARS_SET_USERDOCKER_META_INFO:
