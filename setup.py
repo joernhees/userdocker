@@ -46,6 +46,7 @@ setup(
     ],
     keywords='docker user limit admin hpc cluster computing permissions',
     packages=find_packages(),
+    include_package_data=True,
     data_files=[('/etc/userdocker/', ['userdocker/config/default.py'])],
     entry_points={'console_scripts': ['userdocker=userdocker.userdocker:main']},
     zip_safe=True,
