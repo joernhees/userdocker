@@ -196,8 +196,9 @@ ENV_VARS_SET_USERDOCKER_META_INFO = True
 #   available to a single container. Setting this to -1 means no limit.
 # - GPUs on which more than NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED MB of memory is
 #   used will be marked as unavailable. This setting is userdocker independent.
-# - If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPUs used in any other container
-#   are unavailable as well.
+#   Setting this to -1 results in GPUs always being regarded as available.
+# - If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPUs already used in any other
+#   container are regarded as unavailable for this container.
 NVIDIA_SMI = '/usr/bin/nvidia-smi'  # path to nvidia-smi
 NV_ALLOWED_GPUS = 'ALL'  # otherwise a list like [1, 3]. [] for none.
 NV_DEFAULT_GPU_COUNT_RESERVATION = 1

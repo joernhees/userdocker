@@ -75,9 +75,10 @@ def nvidia_get_available_gpus(docker, nvidia_smi=NVIDIA_SMI):
         gpu_mem_used[gpu] = mem_used
 
     # get available gpus asc by mem used
+    mem_limit = NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
     available_gpus = [
         g for g, m in sorted(gpu_mem_used.items(), key=itemgetter(1, 0))
-        if m <= NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
+        if mem_limit < 0 or m <= mem_limit
     ]
     if NV_ALLOWED_GPUS != 'ALL':
         available_gpus = [g for g in available_gpus if g in NV_ALLOWED_GPUS]
