@@ -6,5 +6,5 @@ from ..helpers.execute import exec_cmd
 
 
 def exec_cmd_version(args):
-    print("Userdocker Version: %s" % __version__)
+    print("Userdocker Version: %s\n" % __version__)
     exec_cmd(init_cmd(args), dry_run=args.dry_run)
