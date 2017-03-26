@@ -94,9 +94,10 @@ def prepare_nvidia_docker_run(args):
             "ERROR: No GPUs available due to admin setting."
         )
 
-    nv_gpus = [g.strip() for g in os.getenv('NV_GPU', '').split(',')]
+    nv_gpus = os.getenv('NV_GPU', '')
     if nv_gpus:
         # the user has set NV_GPU, just check if it's ok
+        nv_gpus = [g.strip() for g in nv_gpus.split(',')]
         try:
             nv_gpus = [int(gpu) for gpu in nv_gpus]
         except ValueError as e:
