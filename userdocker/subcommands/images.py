@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from ..helpers.cmd import init_cmd
+from ..helpers.execute import exec_cmd
 from ..helpers.parser import init_subcommand_parser
 
 
@@ -14,9 +15,9 @@ def parser_images(parser):
     )
 
 
-def prepare_commandline_images(args):
+def exec_cmd_images(args):
     cmd = init_cmd(args)
     if args.repo_tag:
         cmd.append("--")
         cmd.append(args.repo_tag)
-    return cmd
+    exec_cmd(cmd, dry_run=args.dry_run)

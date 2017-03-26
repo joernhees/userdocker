@@ -4,8 +4,8 @@ import os
 import subprocess
 import sys
 
-from .helpers.exceptions import UserDockerException
-from .helpers.logger import logger
+from .exceptions import UserDockerException
+from .logger import logger
 
 
 def exec_cmd(cmd, dry_run=False, return_status=True):

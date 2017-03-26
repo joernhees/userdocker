@@ -4,12 +4,14 @@ import logging
 import os
 import sys
 
-from .commandline import prepare_commandline
-from .execute import exec_cmd
 from .helpers.logger import logger
 from .helpers.logger import logger_setup
+
+from .helpers.cmd import init_cmd
 from .helpers.exceptions import UserDockerException
+from .helpers.execute import exec_cmd
 from .parser import parse_args
+from .subcommands import specific_command_executors
 
 
 if not os.getenv('SUDO_UID'):
@@ -17,21 +19,27 @@ if not os.getenv('SUDO_UID'):
     logger.warning("%s should be executed via sudo", sys.argv[0])
 
 
-def parse_and_build_commandline():
+def prepare_and_exec_cmd(args):
+    scmd = args.subcommand
+    if scmd in specific_command_executors:
+        specific_command_executors[scmd](args)
+    else:
+        exec_cmd(init_cmd(args), dry_run=args.dry_run)
+
+
+def parse_and_exec_cmd():
     if os.getenv('DOCKER_HOST'):
         raise UserDockerException(
             'ERROR: DOCKER_HOST env var not supported yet'
         )
     args = parse_args()
     logger_setup(args)
-    cmd = prepare_commandline(args)
-    return args, cmd
+    prepare_and_exec_cmd(args)
 
 
 def main():
     try:
-        args, cmd = parse_and_build_commandline()
-        exec_cmd(cmd, dry_run=args.dry_run)
+        parse_and_exec_cmd()
     except UserDockerException as e:
         print(e, file=sys.stderr)
         sys.exit(1)

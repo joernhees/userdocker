@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from ..helpers.execute import exec_cmd
 
-def prepare_commandline_dockviz(args):
+
+def exec_cmd_dockviz(args):
     # just run dockviz
-    return [
+    cmd = [
         args.executor_path, "run", "-it", "--rm",
         "-v", "/var/run/docker.sock:/var/run/docker.sock",
         "nate/dockviz", "images", "--tree"
     ]
+    exec_cmd(cmd, dry_run=args.dry_run)

@@ -25,9 +25,9 @@ from ..config import VOLUME_MOUNTS_DEFAULT
 from ..config import gid
 from ..config import uid
 from ..config import user_name
-from ..execute import exec_cmd
 from ..helpers.cmd import init_cmd
 from ..helpers.exceptions import UserDockerException
+from ..helpers.execute import exec_cmd
 from ..helpers.logger import logger
 from ..helpers.nvidia import nvidia_get_available_gpus
 from ..helpers.parser import init_subcommand_parser
@@ -143,7 +143,7 @@ def prepare_nvidia_docker_run(args):
         os.environ['NV_GPU'] = gpu_env
 
 
-def prepare_commandline_run(args):
+def exec_cmd_run(args):
     cmd = init_cmd(args)
 
     mounts = []
@@ -276,4 +276,4 @@ def prepare_commandline_run(args):
     cmd.append(img)
     cmd.extend(args.image_args)
 
-    return cmd
+    exec_cmd(cmd, dry_run=args.dry_run)
