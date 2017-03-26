@@ -28,7 +28,7 @@ def exec_cmd(cmd, dry_run=False, return_status=True):
         if return_status:
             ret = subprocess.check_call(cmd)
         else:
-            ret = subprocess.check_output(cmd)
+            ret = subprocess.check_output(cmd, universal_newlines=True)
         return ret
     except subprocess.CalledProcessError as e:
         ret = e.returncode
