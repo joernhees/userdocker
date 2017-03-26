@@ -125,7 +125,10 @@ def prepare_nvidia_docker_run(args):
         for g in nv_gpus:
             if g not in gpus_available:
                 raise UserDockerException(
-                    "ERROR: GPU %d is currently not available: " % g
+                    'ERROR: GPU %d is currently not available!\n'
+                    'Use "userdocker ps --gpu-free" to find available GPUs.\n'
+                    'Use "userdocker ps --gpu-used" or "nvidia-smi" to see why '
+                    'this GPU might not be available.' % g
                 )
     else:
         # NV_GPU wasn't set, use admin defaults, tell user
