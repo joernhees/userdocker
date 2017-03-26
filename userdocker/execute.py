@@ -21,7 +21,7 @@ def exec_cmd(cmd, dry_run=False, return_status=True):
 
     if not os.path.exists(cmd[0]):
         raise UserDockerException(
-            "ERROR: can't find docker executable: %s" % cmd[0]
+            "ERROR: can't find executable: %s" % cmd[0]
         )
 
     try:
