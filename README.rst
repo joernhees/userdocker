@@ -163,5 +163,5 @@ some nodes in your cluster, you can use the Host\_List field:
 
 ::
 
-    %userdocker node1,node2,node4=(root) /usr/local/bin/userdocker
+    %users node1,node2,node4=(root) /usr/local/bin/userdocker
 
