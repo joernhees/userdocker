@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 import re
 from collections import defaultdict
 from operator import itemgetter
@@ -8,6 +9,7 @@ from ..config import NVIDIA_SMI
 from ..config import NV_ALLOWED_GPUS
 from ..config import NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION
 from ..config import NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
+from .logger import logger
 from .execute import exec_cmd
 
 
@@ -15,6 +17,7 @@ def nvidia_get_gpus_used_by_containers(docker):
     running_containers = exec_cmd(
         [docker, 'ps', '-q'],
         return_status=False,
+        loglvl=logging.DEBUG,
     ).split()
     if not running_containers:
         return {}
@@ -25,7 +28,9 @@ def nvidia_get_gpus_used_by_containers(docker):
             '{{json $.HostConfig.Devices}}]'
         ] + running_containers,
         return_status=False,
+        loglvl=logging.DEBUG,
     )
+    logger.debug('gpu_used_by_containers_str: %s', gpu_used_by_containers_str)
     gpu_dev_id_re = re.compile('^/dev/nvidia([0-9]+)$')
     gpu_used_by_containers = defaultdict(list)
     for line in gpu_used_by_containers_str.splitlines():
@@ -34,7 +39,7 @@ def nvidia_get_gpus_used_by_containers(docker):
             d = dev.get('PathOnHost', '')
             m = gpu_dev_id_re.match(d)
             if m:
-                gpu_id = m.groups()
+                gpu_id = int(m.groups()[0])
                 userdocker_user = [
                     e.split('=', 1)[1]
                     for e in env if e.startswith('USERDOCKER_USER=')
@@ -42,6 +47,10 @@ def nvidia_get_gpus_used_by_containers(docker):
                 user = userdocker_user[0] if userdocker_user else ''
                 gpu_used_by_containers[gpu_id].append(
                     (container, container_name, user)
+                )
+                logger.debug(
+                    'gpu %d used by container: %s, name: %s, user: %s',
+                    gpu_id, container, container_name, user
                 )
     return gpu_used_by_containers
 
@@ -55,7 +64,9 @@ def nvidia_get_available_gpus(docker, nvidia_smi=NVIDIA_SMI):
          '--query-gpu=index,memory.used,utilization.gpu',
          '--format=csv'],
         return_status=False,
+        loglvl=logging.DEBUG,
     )
+    logger.debug('gpu usage:\n%s', gpu_mem_used_str)
     gpu_mem_used = {}
     for line in gpu_mem_used_str.splitlines()[1:]:  # skip header
         gpu, mem_used, gpu_utilization = line.split(', ')
@@ -70,6 +81,8 @@ def nvidia_get_available_gpus(docker, nvidia_smi=NVIDIA_SMI):
     ]
     if NV_ALLOWED_GPUS != 'ALL':
         available_gpus = [g for g in available_gpus if g in NV_ALLOWED_GPUS]
+    logger.debug(
+        'available GPUs after mem and allowance filtering: %r', available_gpus)
 
     if not NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION:
         return available_gpus

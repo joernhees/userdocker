@@ -28,10 +28,11 @@ def exec_cmd_ps(args):
         exec_cmd(init_cmd(args), dry_run=args.dry_run)
         return
 
-    gpus_used = nvidia_get_gpus_used_by_containers(args.executor_path)
     if args.gpu_reservations:
-        for i, (container, container_name, user) in sorted(gpus_used.items()):
-            print("\t".join((i, container, container_name, user)))
+        gpus_used = nvidia_get_gpus_used_by_containers(args.executor_path)
+        for i, l in sorted(gpus_used.items()):
+            for container, container_name, user in sorted(l):
+                print("\t".join((str(i), container, container_name, user)))
     elif args.gpu_free:
         available_gpus = nvidia_get_available_gpus(args.executor_path)
         for gpu in available_gpus:
