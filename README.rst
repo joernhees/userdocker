@@ -24,7 +24,9 @@ this prohibitive for cluster computing.
 
 Userdocker solves this problem by wrapping the docker command and just making
 the safe parts available to users. Admins can decide what they consider safe
-(with sane defaults).
+(with sane defaults). The userdocker command largely follows the docker
+commandline syntax, so users can use it as an in-place replacement for the
+docker command.
 
 Feedback / bugreports / contributions welcome:
 
@@ -43,7 +45,7 @@ Sample Usage:
     sudo userdocker images
     sudo userdocker dockviz
 
-    # (docker run) run a debian image with user mounted home
+    # (docker run) run a debian image with user (read-only) mounted home
     sudo userdocker run -it --rm -v $HOME:$HOME:ro debian bash
 
     # (docker ps) list running containers
@@ -53,13 +55,18 @@ Sample Usage:
     sudo userdocker pull debian
     sudo userdocker load < image.tar.gz
 
+    # (nvidia-docker) extensions for nvidia GPU support
+    alias nvidia-userdocker='userdocker --executor=nvidia-docker'
+    NV_GPU=1,3,7 nvidia-userdocker run -it --rm nvcr.io/nvidia/tensorflow
+    userdocker ps --gpu-reservations
+    userdocker ps --gpu-free
 
 Features:
 =========
 
 - Similar commandline interface as ``docker ...`` called ``userdocker ...``
-- Support for several docker commands (docker, nvidia-docker)
-- Fine granular configurability for admins in ``/etc/userdocker/`` allow to:
+- Support for several docker commands / plugins (docker, nvidia-docker)
+- Fine granular configurability for admins in ``/etc/userdocker/`` allows to:
 
    - restrict runnable images if desired (allows admin reviews)
    - restrict run to locally available images
@@ -71,9 +78,10 @@ Features:
    - enforce docker args
    - restrict port publishing
    - explicitly white-list available args to user
+   - restrict allowed GPU access / reservations via ``NV_GPU``
 
 - System wide config + overrides for individual groups, gids, users, uids.
-- Easily extensible to further subcommands and args.
+- Easy extensibility for further subcommands and args.
 
 
 Installation:
@@ -128,36 +136,19 @@ decisions for your scenario.
 ---------------------------------------------
 
 You should now allow the users in question to run ``sudo userdocker``. This is
-basically done by adding a line to ``/etc/sudoers``. If you want to grant this
-permission to all users in group ``users``, add one of the following two lines
-to your ``/etc/sudoers`` (depending on if you want them to type their password
-first):
+basically done by adding a ``/etc/sudoers.d/userdocker`` file. If you want to
+grant this permission to all users in group ``users``, add the following
+two lines:
 
 ::
 
-    %users ALL=(root) /usr/local/bin/userdocker
+    Defaults env_keep += "NV_GPU"
     %users ALL=(root) NOPASSWD: /usr/local/bin/userdocker
 
-In case you want to grant userdocker rights only to some users, we suggest to
-add a ``userdocker`` group and then allow users in that group to execute
-``sudo userdocker``:
-
-.. code-block:: bash
-
-    # add a group called userdocker:
-    sudo addgroup userdocker
-
-    # add someuser to the group:
-    sudo adduser someuser userdocker
-
-After that allow users in group userdocker to execute ``sudo userdocker`` by
-adding one of the following lines to your ``/etc/sudoers`` (depending on if you
-want them to type their password first):
-
-::
-
-    %userdocker ALL=(root) /usr/local/bin/userdocker
-    %userdocker ALL=(root) NOPASSWD: /usr/local/bin/userdocker
+The first is strongly recommended in case you want to allow users to use nvidia
+GPUs from within docker containers via nvidia-docker (see EXECUTORS in config).
+Without it they cannot pass the NV_GPU environment variable to the userdocker
+(and thereby nvidia-docker) command to select their desired GPU(s).
 
 
 FAQ:
