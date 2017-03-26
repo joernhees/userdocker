@@ -183,15 +183,22 @@ ENV_VARS_SET_USERDOCKER_META_INFO = True
 
 # nvidia docker specific settings
 # The following settings allow to restrict the way users can use nvidia GPUs
-# in their container. The NV_ALLOWED_GPUS setting allows you to only make a
-# subset of GPUs available to users. Setting this to [] or None will result in
-# nvidia-docker to always fail as no GPUs are available. It might be less
-# confusing for users to remove the nvidia-docker executor in those cases!
-# GPUs on which more than NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED MB of memory is
-# used will be marked as unavailable.
-# If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPU used in any other container
-# is unavailable as well.
-NVIDIA_SMI = '/usr/bin/nvidia-smi'
+# in their container.
+# - NV_ALLOWED_GPUS allows you to only make a subset of GPUs available to users.
+#   Setting this to [] or None will result in nvidia-docker to always fail as no
+#   GPUs are available. If that's desired, you should instead remove the
+#   nvidia-docker executor above, as that's less confusing for users!
+# - NV_DEFAULT_GPU_COUNT_RESERVATION allows to specify how many GPUs are passed
+#   to a container if the user does not specify the NV_GPU env var. This is
+#   different from the nvidia-docker defaults, which would by default allow
+#   access to all GPUs!
+# - NV_MAX_GPU_COUNT_RESERVATION allows you to limit the amount of GPUs made
+#   available to a single container. Setting this to -1 means no limit.
+# - GPUs on which more than NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED MB of memory is
+#   used will be marked as unavailable. This setting is userdocker independent.
+# - If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPUs used in any other container
+#   are unavailable as well.
+NVIDIA_SMI = '/usr/bin/nvidia-smi'  # path to nvidia-smi
 NV_ALLOWED_GPUS = 'ALL'  # otherwise a list like [1, 3]. [] for none.
 NV_DEFAULT_GPU_COUNT_RESERVATION = 1
 NV_MAX_GPU_COUNT_RESERVATION = -1

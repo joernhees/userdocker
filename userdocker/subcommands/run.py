@@ -111,8 +111,8 @@ def prepare_nvidia_docker_run(args):
                 "admin. Available GPUs: %r" % (NV_ALLOWED_GPUS,)
             )
 
-        # check if in bounds
-        if len(nv_gpus) > NV_MAX_GPU_COUNT_RESERVATION:
+        # check if in bounds (and MAX >= 0)
+        if 0 <= NV_MAX_GPU_COUNT_RESERVATION < len(nv_gpus):
             raise UserDockerException(
                 "ERROR: Number of requested GPUs > %d (admin limit)" % (
                     NV_MAX_GPU_COUNT_RESERVATION,)
