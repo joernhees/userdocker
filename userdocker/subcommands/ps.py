@@ -11,14 +11,14 @@ def parser_ps(parser):
 
     arg_group = sub_parser.add_mutually_exclusive_group()
     arg_group.add_argument(
-        "--gpu-reservations",
-        help="show userdocker reserved GPUs",
+        "--gpu-used",
+        help="show GPUs used by nvidia-docker containers",
         action="store_true",
     )
 
     arg_group.add_argument(
         "--gpu-free",
-        help="show allowed free GPUs",
+        help="show allowed and free GPUs (asc by MB mem used)",
         action="store_true",
     )
 
@@ -28,8 +28,10 @@ def exec_cmd_ps(args):
         exec_cmd(init_cmd(args), dry_run=args.dry_run)
         return
 
-    if args.gpu_reservations:
+    if args.gpu_used:
         gpus_used = nvidia_get_gpus_used_by_containers(args.executor_path)
+        if gpus_used:
+            print("\t".join(("GPU", "Container", "ContainerName", "User")))
         for i, l in sorted(gpus_used.items()):
             for container, container_name, user in sorted(l):
                 print("\t".join((str(i), container, container_name, user)))

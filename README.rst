@@ -58,7 +58,7 @@ Sample Usage:
     # (nvidia-docker) extensions for nvidia GPU support
     alias nvidia-userdocker='userdocker --executor=nvidia-docker'
     NV_GPU=1,3,7 nvidia-userdocker run -it --rm nvcr.io/nvidia/tensorflow
-    userdocker ps --gpu-reservations
+    userdocker ps --gpu-used
     userdocker ps --gpu-free
 
 Features:

@@ -31,6 +31,9 @@ New features:
     NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION config option.
   - Optional exclusion of otherwise busy GPUs from being available to user
     containers (NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED)
+  - Users can list GPUs that are used by other containers
+    (userdocker ps --gpu-used)
+  - Users can list free GPUs (userdocker ps --gpu-free)
 
 Bug fixes:
 ----------
