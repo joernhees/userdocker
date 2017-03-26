@@ -26,6 +26,7 @@ def parser_ps(parser):
 def exec_cmd_ps(args):
     if not args.gpu_reservations and not args.gpu_free:
         exec_cmd(init_cmd(args), dry_run=args.dry_run)
+        return
 
     gpus_used = nvidia_get_gpus_used_by_containers(args.executor_path)
     if args.gpu_reservations:
