@@ -1,0 +1,78 @@
+Version 2.0.0
+=============
+
+This is a major release.
+
+Backwards incompatibilities:
+----------------------------
+
+- VOLUME_MOUNT config vars could previously include {USER} and {HOME} strings.
+  This is now replaced by user_name and user_home python variables that can be
+  used throughout all config files (and in all settings, not only mounts).
+- HOME env var in containers is set to user_home by default now.
+- Executor nvidia-docker now includes configurable limits to NV_GPU env var.
+  Before the default was to always make all GPUs available (see new config
+  options below).
+
+New features:
+-------------
+
+- Config files now support python variables: uid, gid, user_name, group_name and
+  user_home.
+- userdocker version command will include userdocker version information.
+- Use of DOCKER_HOST env var will raise an ERROR.
+- Improved support for nvidia-docker's NV_GPU env var, which is now checked
+  against admin config options:
+
+  - User available GPU(s) configurable, including defaults in case NV_GPU isn't
+    specified (NV_ALLOWED_GPUS, NV_MAX_GPU_COUNT_RESERVATION,
+    NV_DEFAULT_GPU_COUNT_RESERVATION)
+  - Optional exclusive GPU usage per container via the
+    NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION config option.
+  - Optional exclusion of otherwise busy GPUs from being available to user
+    containers (NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED)
+
+Bug fixes:
+----------
+
+- Error message in case of missing executable improved.
+
+
+
+Version 1.0.1
+=============
+
+This is a patch release.
+
+Bug fixes:
+----------
+
+- Mitigation for nvidia-docker "--" commandline bug.
+
+
+
+Version 1.0.0
+=============
+
+Initial release.
+
+Features:
+---------
+
+- Similar commandline interface as ``docker ...`` called ``userdocker ...``
+- Support for several docker commands / plugins (docker, nvidia-docker)
+- Fine granular configurability for admins in ``/etc/userdocker/`` allows to:
+
+   - restrict runnable images if desired (allows admin reviews)
+   - restrict run to locally available images
+   - restrict available mount points (or enforce them, or default mount)
+   - probe mounts (to make sure nfs automounts don't make docker sad)
+   - enforce non-root user in container (same uid:gid as on host)
+   - enforce dropping caps
+   - enforce environment vars
+   - enforce docker args
+   - restrict port publishing
+   - explicitly white-list available args to user
+
+- System wide config + overrides for individual groups, gids, users, uids.
+- Easy extensibility for further subcommands and args.
