@@ -7,6 +7,7 @@ from operator import itemgetter
 from config import NV_ALLOWED_GPUS
 from config import NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
 from config import NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION
+from config import NVIDIA_SMI
 from execute import exec_cmd
 
 
@@ -45,7 +46,7 @@ def nvidia_get_gpus_used_by_containers(docker):
     return gpu_used_by_containers
 
 
-def nvidia_get_available_gpus(docker, nvidia_smi='nvidia-smi'):
+def nvidia_get_available_gpus(docker, nvidia_smi=NVIDIA_SMI):
     if not NV_ALLOWED_GPUS:
         return []
 

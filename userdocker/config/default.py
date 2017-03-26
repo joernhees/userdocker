@@ -174,8 +174,10 @@ ENV_VARS_EXT = {
 }
 
 # By default userdocker will set USERDOCKER and USERDOCKER_USER ENV vars to the
-# container. They might in future be used to allow users to interact with their
-# previously started containers.
+# container. They are used by userdocker internally and might in future be used
+# to allow users to interact with their previously started containers for
+# example. Only set to False if you know what you're doing and need a "cleaner"
+# env for some reason.
 ENV_VARS_SET_USERDOCKER_META_INFO = True
 
 
@@ -189,10 +191,9 @@ ENV_VARS_SET_USERDOCKER_META_INFO = True
 # used will be marked as unavailable.
 # If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPU used in any other container
 # is unavailable as well.
+NVIDIA_SMI = '/usr/bin/nvidia-smi'
 NV_ALLOWED_GPUS = 'ALL'  # otherwise a list like [1, 3]. [] for none.
 NV_DEFAULT_GPU_COUNT_RESERVATION = 1
 NV_MAX_GPU_COUNT_RESERVATION = -1
 NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED = 0
 NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION = True
-
-#NV_GPU=0,1,2,3
