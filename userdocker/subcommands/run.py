@@ -127,8 +127,8 @@ def prepare_nvidia_docker_run(args):
                 raise UserDockerException(
                     'ERROR: GPU %d is currently not available!\nUse:\n'
                     '"sudo userdocker ps --gpu-free" to find available GPUs.\n'
-                    '"sudo userdocker ps --gpu-used" or "nvidia-smi" to see '
-                    'status information.' % g
+                    '"sudo userdocker ps --gpu-used" and "nvidia-smi" to see '
+                    'status.' % g
                 )
     else:
         # NV_GPU wasn't set, use admin defaults, tell user
@@ -141,7 +141,9 @@ def prepare_nvidia_docker_run(args):
         gpus = gpus_available[:gpu_default]
         if len(gpus) < gpu_default:
             raise UserDockerException(
-                "Could not find %d available GPU(s)" % gpu_default
+                'Could not find %d available GPU(s)!\nUse:\n'
+                '"sudo userdocker ps --gpu-used" and "nvidia-smi" to see '
+                'status.' % gpu_default
             )
         gpu_env = ",".join([str(g) for g in gpus])
         logger.info("Setting NV_GPU=%s" % gpu_env)
