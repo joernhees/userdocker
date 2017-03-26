@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import logging
 import os
 import re
 
@@ -256,12 +257,17 @@ def exec_cmd_run(args):
         pass
     elif RUN_PULL == "always":
         # pull image
-        exec_cmd([args.executor_path, 'pull', img], dry_run=args.dry_run)
+        exec_cmd(
+            [args.executor_path, 'pull', img],
+            dry_run=args.dry_run,
+            loglvl=logging.DEBUG,
+        )
     elif RUN_PULL == "never":
         # check if image is available locally
         tmp = exec_cmd(
             [args.executor_path, 'images', '-q', img],
             return_status=False,
+            loglvl=logging.DEBUG,
         )
         if not tmp:
             raise UserDockerException(
