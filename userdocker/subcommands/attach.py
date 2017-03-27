@@ -6,6 +6,7 @@ import logging
 from ..config import uid
 from ..helpers.cmd import init_cmd
 from ..helpers.exceptions import UserDockerException
+from ..helpers.execute import exec_cmd
 from ..helpers.execute import exit_exec_cmd
 from ..helpers.logger import logger
 from ..helpers.parser import init_subcommand_parser
