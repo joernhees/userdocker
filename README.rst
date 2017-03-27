@@ -6,8 +6,10 @@ commandline access to users.
 
 .. note::
 
-    Userdocker is currently in ALPHA state. Testing, reviewing and feedback are
-    very welcome. Use with caution!
+    Userdocker is currently in BETA state. Despite our ongoing efforts to test
+    on our local infrastructure, further testing, reviewing and feedback are
+    very welcome. Use with caution and watch the GitHub repo for issues and
+    new releases!
 
 
 Userdocker is aimed towards scientific high performance computing and cluster
