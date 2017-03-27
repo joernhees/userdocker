@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from .attach import *
 from .dockviz import *
 from .images import *
 from .ps import *

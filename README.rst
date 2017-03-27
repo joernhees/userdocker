@@ -50,6 +50,9 @@ Sample Usage:
     # (docker run) run a debian image with user (read-only) mounted home
     sudo userdocker run -it --rm -v $HOME:$HOME:ro debian bash
 
+    # (docker attach) re-attach to own container after connection loss
+    sudo userdocker attach 438c7648e76b
+
     # (docker ps) list running containers
     sudo userdocker ps
 

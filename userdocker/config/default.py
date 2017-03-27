@@ -56,6 +56,7 @@ EXECUTOR_DEFAULT = 'docker'
 # The following allows you to specify which docker top level commands a user can
 # run at all (still restricted by the following settings):
 ALLOWED_SUBCOMMANDS = [
+    'attach',  # allows users to re-attach to _their_ containers
     'dockviz',  # tree visualization of images
     'images',
     'load',  # see RUN_PULL as well
@@ -78,6 +79,9 @@ ARGS_ALWAYS = {
 # The following arguments are available to the user for the given command:
 # (aliases are supported as tuples below, but not in ARGS_ALWAYS)
 ARGS_AVAILABLE = {
+    'attach': [
+        '--no-stdin',
+    ],
     'images': [
         ('-a', '--all'),
         '--digests',
@@ -172,13 +176,6 @@ ENV_VARS_EXT = {
         'NCCL_TOPOLOGY=CUBEMESH',
     ]
 }
-
-# By default userdocker will set USERDOCKER and USERDOCKER_USER ENV vars to the
-# container. They are used by userdocker internally and might in future be used
-# to allow users to interact with their previously started containers for
-# example. Only set to False if you know what you're doing and need a "cleaner"
-# env for some reason.
-ENV_VARS_SET_USERDOCKER_META_INFO = True
 
 
 # nvidia docker specific settings

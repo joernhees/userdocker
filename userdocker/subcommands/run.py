@@ -12,7 +12,6 @@ from ..config import CAPS_ADD
 from ..config import CAPS_DROP
 from ..config import ENV_VARS
 from ..config import ENV_VARS_EXT
-from ..config import ENV_VARS_SET_USERDOCKER_META_INFO
 from ..config import NV_ALLOWED_GPUS
 from ..config import NV_DEFAULT_GPU_COUNT_RESERVATION
 from ..config import NV_MAX_GPU_COUNT_RESERVATION
@@ -214,12 +213,11 @@ def exec_cmd_run(args):
         prepare_nvidia_docker_run(args)
 
     env_vars = ENV_VARS + ENV_VARS_EXT.get(args.executor, [])
-    if ENV_VARS_SET_USERDOCKER_META_INFO:
-        env_vars += [
-            "USERDOCKER=%s" % __version__,
-            "USERDOCKER_USER=%s" % user_name,
-            "USERDOCKER_UID=%d" % uid,
-        ]
+    env_vars += [
+        "USERDOCKER=%s" % __version__,
+        "USERDOCKER_USER=%s" % user_name,
+        "USERDOCKER_UID=%d" % uid,
+    ]
     for env_var in env_vars:
         cmd += ['-e', env_var]
 

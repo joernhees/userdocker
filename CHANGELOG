@@ -21,6 +21,8 @@ New features:
   user_home.
 - userdocker version command will include userdocker version information.
 - Use of DOCKER_HOST env var will raise an ERROR.
+- Users can now re-attach to their previously started containers (in case of
+  connection loss for example).
 - Improved support for nvidia-docker's NV_GPU env var, which is now checked
   against admin config options:
 
