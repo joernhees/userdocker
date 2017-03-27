@@ -33,6 +33,9 @@ def exec_cmd_attach(args):
         cmd += ['--detach-keys', args.detach_keys]
 
     container = args.container
+    cmd += [container]
+
+    # check if we're allowed to attach to container (if it's ours)
     container_env = exec_cmd(
         [
             args.executor_path, 'inspect',
