@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ..helpers.cmd import init_cmd
-from ..helpers.execute import exec_cmd
+from ..helpers.execute import exit_exec_cmd
 from ..helpers.nvidia import nvidia_get_available_gpus
 from ..helpers.nvidia import nvidia_get_gpus_used_by_containers
 from ..helpers.parser import init_subcommand_parser
@@ -25,8 +25,7 @@ def parser_ps(parser):
 
 def exec_cmd_ps(args):
     if not args.gpu_used and not args.gpu_free:
-        exec_cmd(init_cmd(args), dry_run=args.dry_run)
-        return
+        exit_exec_cmd(init_cmd(args), dry_run=args.dry_run)
 
     if args.gpu_used:
         gpus_used = nvidia_get_gpus_used_by_containers(args.executor_path)

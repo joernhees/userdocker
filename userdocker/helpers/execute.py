@@ -36,3 +36,7 @@ def exec_cmd(cmd, dry_run=False, return_status=True, loglvl=logging.INFO):
     except subprocess.CalledProcessError as e:
         ret = e.returncode
         sys.exit(ret)
+
+
+def exit_exec_cmd(cmd, dry_run=False):
+    sys.exit(exec_cmd(cmd, dry_run=dry_run))

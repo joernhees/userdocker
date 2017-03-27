@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ..helpers.execute import exec_cmd
+from ..helpers.execute import exit_exec_cmd
 
 
 def exec_cmd_dockviz(args):
@@ -10,4 +10,4 @@ def exec_cmd_dockviz(args):
         "-v", "/var/run/docker.sock:/var/run/docker.sock",
         "nate/dockviz", "images", "--tree"
     ]
-    exec_cmd(cmd, dry_run=args.dry_run)
+    exit_exec_cmd(cmd, dry_run=args.dry_run)

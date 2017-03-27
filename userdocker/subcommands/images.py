@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from ..helpers.cmd import init_cmd
-from ..helpers.execute import exec_cmd
+from ..helpers.execute import exit_exec_cmd
 from ..helpers.parser import init_subcommand_parser
 
 
@@ -20,4 +20,4 @@ def exec_cmd_images(args):
     if args.repo_tag:
         cmd.append("--")
         cmd.append(args.repo_tag)
-    exec_cmd(cmd, dry_run=args.dry_run)
+    exit_exec_cmd(cmd, dry_run=args.dry_run)

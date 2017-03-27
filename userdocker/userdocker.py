@@ -9,7 +9,7 @@ from .helpers.logger import logger_setup
 
 from .helpers.cmd import init_cmd
 from .helpers.exceptions import UserDockerException
-from .helpers.execute import exec_cmd
+from .helpers.execute import exit_exec_cmd
 from .parser import parse_args
 from .subcommands import specific_command_executors
 
@@ -24,7 +24,7 @@ def prepare_and_exec_cmd(args):
     if scmd in specific_command_executors:
         specific_command_executors[scmd](args)
     else:
-        exec_cmd(init_cmd(args), dry_run=args.dry_run)
+        exit_exec_cmd(init_cmd(args), dry_run=args.dry_run)
 
 
 def parse_and_exec_cmd():

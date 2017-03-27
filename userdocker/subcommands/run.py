@@ -28,6 +28,7 @@ from ..config import user_name
 from ..helpers.cmd import init_cmd
 from ..helpers.exceptions import UserDockerException
 from ..helpers.execute import exec_cmd
+from ..helpers.execute import exit_exec_cmd
 from ..helpers.logger import logger
 from ..helpers.nvidia import nvidia_get_available_gpus
 from ..helpers.parser import init_subcommand_parser
@@ -286,4 +287,4 @@ def exec_cmd_run(args):
     cmd.append(img)
     cmd.extend(args.image_args)
 
-    exec_cmd(cmd, dry_run=args.dry_run)
+    exit_exec_cmd(cmd, dry_run=args.dry_run)
