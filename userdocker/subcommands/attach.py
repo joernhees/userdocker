@@ -60,8 +60,8 @@ def exec_cmd_attach(args):
         "Container %s was started by user id %d", container, userdocker_uid)
     if uid != userdocker_uid:
         raise UserDockerException(
-            'ERROR: container %s was started by %d, but you are %d. Permission '
-            'denied!' % (container, userdocker_uid, uid)
+            'ERROR: container %s was started by user id %d, but you are %d. '
+            'Permission denied!' % (container, userdocker_uid, uid)
         )
 
     exit_exec_cmd(cmd, dry_run=args.dry_run)
