@@ -19,8 +19,9 @@ def nvidia_get_gpus_used_by_containers(docker):
         return_status=False,
         loglvl=logging.DEBUG,
     ).split()
+    gpu_used_by_containers = defaultdict(list)
     if not running_containers:
-        return {}
+        return gpu_used_by_containers
     gpu_used_by_containers_str = exec_cmd(
         [
             docker, 'inspect', '--format',
@@ -32,7 +33,6 @@ def nvidia_get_gpus_used_by_containers(docker):
     )
     logger.debug('gpu_used_by_containers_str: %s', gpu_used_by_containers_str)
     gpu_dev_id_re = re.compile('^/dev/nvidia([0-9]+)$')
-    gpu_used_by_containers = defaultdict(list)
     for line in gpu_used_by_containers_str.splitlines():
         container_name, container, env, devs = json.loads(line)
         for dev in devs:
@@ -74,11 +74,16 @@ def nvidia_get_available_gpus(docker, nvidia_smi=NVIDIA_SMI):
         mem_used = int(mem_used.split(' MiB')[0])
         gpu_mem_used[gpu] = mem_used
 
-    # get available gpus asc by mem used
+    gpus_used_by_containers = nvidia_get_gpus_used_by_containers(docker)
+
+    # get available gpus asc by mem used and reservation counts
     mem_limit = NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
+    mem_res_gpu = [
+        (m, len(gpus_used_by_containers.get(gpu, [])), gpu)
+        for gpu, m in gpu_mem_used.items()
+    ]
     available_gpus = [
-        g for g, m in sorted(gpu_mem_used.items(), key=itemgetter(1, 0))
-        if mem_limit < 0 or m <= mem_limit
+        g for m, r, g in sorted(mem_res_gpu) if mem_limit < 0 or m <= mem_limit
     ]
     if NV_ALLOWED_GPUS != 'ALL':
         available_gpus = [g for g in available_gpus if g in NV_ALLOWED_GPUS]
@@ -88,5 +93,4 @@ def nvidia_get_available_gpus(docker, nvidia_smi=NVIDIA_SMI):
     if not NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION:
         return available_gpus
 
-    gpus_used_by_containers = nvidia_get_gpus_used_by_containers(docker)
     return [gpu for gpu in available_gpus if gpu not in gpus_used_by_containers]
