@@ -162,6 +162,37 @@ USER_IN_CONTAINER = True
 CAPS_DROP = ['ALL']
 CAPS_ADD = []
 
+# User ability to map ports explicitly:
+# Unlike the probably safe `-P` run arg (which maps all exposed container ports
+# to random free host ports (world accessible)), giving users explicit control
+# over port mappings is probably not the best idea, as they are likely to
+# collide on frequently used ports such as 5000 or 8080.
+# Also it might unintentionally allow them to bind ports in the root range if
+# you are not careful.
+# For flexibility, we allow you to specify regexps that each -p arg is matched
+# against one by one. Only if each of the user's -p args matches at least one of
+# these, the docker run command is executed. If the list is empty, the -p
+# argument is neither allowed nor shown to the user.
+ALLOWED_PORT_MAPPINGS = [
+    # useful defaults: most similar to -P, but allows users to select
+    # ports instead of mapping all exposed publicly. Also might allow them to
+    # bind them local to host only:
+    r'^127\.0\.0\.1::[0-9]+$',  # local access from host (via random free port)
+    '^[0-9]+$',  # public access (via random free host port)
+
+    # more examples:
+
+    # allow `-p 127.0.0.1:5000-6000:80`, so user can map container 80 to
+    # random host port in range of 5000-6000 that is only accessible from host:
+    # r'^127\.0\.0\.1:5000-6000:80$'
+
+    # allow `-p 8080:80`, so user can map container 80 to host 8080 (if free):
+    # '^8080:80$'  # probably useful in user-specific configs
+
+    # allow all (probably bad idea!):
+    # '^.*$',  # allows all, probably bad idea!
+]
+
 # Environment vars to set for the container:
 ENV_VARS = [
     # sets HOME env var to user's home

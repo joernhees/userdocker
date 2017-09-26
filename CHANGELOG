@@ -26,6 +26,10 @@ New features:
 - Use of DOCKER_HOST env var will raise an ERROR.
 - Users can now re-attach to their previously started containers (in case of
   connection loss for example).
+- ALLOWED_PORT_MAPPINGS config var to allow configurable explicit user port
+  publishing (docker run -p). Defaults to selectable container ports that are
+  mappable to random host port (like in -P), but user can decide if host local
+  or world accessible.
 - Improved support for nvidia-docker's NV_GPU env var, which is now checked
   against admin config options:
 

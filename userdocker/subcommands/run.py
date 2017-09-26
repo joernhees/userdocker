@@ -7,6 +7,7 @@ import re
 
 from .. import __version__
 from ..config import ALLOWED_IMAGE_REGEXPS
+from ..config import ALLOWED_PORT_MAPPINGS
 from ..config import CAPS_ADD
 from ..config import CAPS_DROP
 from ..config import ENV_VARS
@@ -59,6 +60,16 @@ def parser_run(parser):
         "-w", "--workdir",
         help="Working directory inside the container",
     )
+
+    if ALLOWED_PORT_MAPPINGS:
+        sub_parser.add_argument(
+            "-p", "--publish",
+            help="Publish a container's ports to the host (see docker help). "
+                 "Allowed: " + ', '.join(ALLOWED_PORT_MAPPINGS),
+            action="append",
+            dest="port_mappings",
+            default=[],
+        )
 
     sub_parser.add_argument(
         "image",
@@ -144,6 +155,17 @@ def prepare_nvidia_docker_run(args):
 def exec_cmd_run(args):
     cmd = init_cmd(args)
 
+    # check port mappings
+    for pm in getattr(args, 'port_mappings', []):
+        for pm_pattern in ALLOWED_PORT_MAPPINGS:
+            if re.match(pm_pattern, pm):
+                cmd += ['-p', pm]
+                break
+        else:
+            raise UserDockerException(
+                "ERROR: given port mapping not allowed: %s" % pm
+            )
+
     mounts = []
     mounts_available = \
         VOLUME_MOUNTS_ALWAYS + VOLUME_MOUNTS_DEFAULT + VOLUME_MOUNTS_AVAILABLE
@@ -153,7 +175,7 @@ def exec_cmd_run(args):
     if not args.no_default_mounts:
         mounts += VOLUME_MOUNTS_DEFAULT
 
-    for user_mount in args.volumes:
+    for user_mount in getattr(args, 'volumes', []):
         if user_mount in mounts:
             continue
         if user_mount in mounts_available:
