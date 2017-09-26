@@ -13,6 +13,9 @@ Backwards incompatibilities:
 - Executor nvidia-docker now includes configurable limits to NV_GPU env var.
   Before the default was to always make all GPUs available (see new config
   options below).
+- PRIVILEGED dropped (use ARGS_AVAILABLE, but let me know how this is useful
+  with userdocker!)
+- ALLOWED_PUBLISH_PORTS_ALL dropped (use ARGS_AVAILABLE)
 
 New features:
 -------------

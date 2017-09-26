@@ -7,7 +7,6 @@ import re
 
 from .. import __version__
 from ..config import ALLOWED_IMAGE_REGEXPS
-from ..config import ALLOWED_PUBLISH_PORTS_ALL
 from ..config import CAPS_ADD
 from ..config import CAPS_DROP
 from ..config import ENV_VARS
@@ -15,7 +14,6 @@ from ..config import ENV_VARS_EXT
 from ..config import NV_ALLOWED_GPUS
 from ..config import NV_DEFAULT_GPU_COUNT_RESERVATION
 from ..config import NV_MAX_GPU_COUNT_RESERVATION
-from ..config import PRIVILEGED
 from ..config import PROBE_USED_MOUNTS
 from ..config import RUN_PULL
 from ..config import USER_IN_CONTAINER
@@ -50,13 +48,6 @@ def parser_run(parser):
             action="append",
             dest="volumes",
             default=[],
-        )
-
-    if ALLOWED_PUBLISH_PORTS_ALL:
-        sub_parser.add_argument(
-            "-P", "--publish-all",
-            help="Publish all exposed ports to random ports",
-            action="store_true",
         )
 
     sub_parser.add_argument(
@@ -207,8 +198,6 @@ def exec_cmd_run(args):
     for mount in mounts:
         cmd += ["-v", mount]
 
-    if args.publish_all:
-        cmd += ["-P"]
 
     if args.executor == 'nvidia-docker':
         prepare_nvidia_docker_run(args)
@@ -230,8 +219,6 @@ def exec_cmd_run(args):
         cmd += ["--cap-drop=%s" % cap_drop]
     for cap_add in CAPS_ADD:
         cmd += ["--cap-add=%s" % cap_add]
-    if PRIVILEGED:
-        cmd += ["--privileged"]
 
     if args.workdir:
         cmd += ["-w", args.workdir]

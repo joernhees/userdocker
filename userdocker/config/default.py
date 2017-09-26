@@ -66,8 +66,9 @@ ALLOWED_SUBCOMMANDS = [
     'version',
 ]
 
-# Arguments (more precisely simple flags) that you want to make available to the
-# user or enforce. Do not include args that are handled below (e.g. run -v)!
+# Simple arguments without options (flags):
+# Arguments (without options) that you want to enforce on the user:
+# Do not include args that are handled below (e.g. run -v)!
 # The following arguments will always be injected for the corresponding command:
 ARGS_ALWAYS = {
     'run': [
@@ -76,7 +77,9 @@ ARGS_ALWAYS = {
         '--rm',
     ],
 }
-# The following arguments are available to the user for the given command:
+# The following arguments (without options) are available to the user for the
+# given command.
+# Do not include args that are handled below (e.g. run -v)!
 # (aliases are supported as tuples below, but not in ARGS_ALWAYS)
 ARGS_AVAILABLE = {
     'attach': [
@@ -105,6 +108,8 @@ ARGS_AVAILABLE = {
         ('-t', '--tty'),
         ('-i', '--interactive'),
         '--read-only',
+        # users can map all exposed container ports to random free host ports:
+        ('-P', '--publish-all'),
     ],
 }
 
@@ -153,18 +158,9 @@ RUN_PULL = 'default'
 USER_IN_CONTAINER = True
 
 # The following allows to drop / grant capabilities of all containers.
-# By default we drop all and make the
+# By default we drop all
 CAPS_DROP = ['ALL']
 CAPS_ADD = []
-PRIVILEGED = False
-
-# User ability to publish ports
-# The ALLOWED_PUBLISH_PORTS_ALL allows the user to use the -P flag, which
-# publishes all ports that are EXPOSEd in the container to random host ports
-# (non priv range).
-# Notice that by default such ports are world accessible, so in case you want to
-# protect them, make sure to have (a docker compatible) iptables in place.
-ALLOWED_PUBLISH_PORTS_ALL = True
 
 # Environment vars to set for the container:
 ENV_VARS = [
