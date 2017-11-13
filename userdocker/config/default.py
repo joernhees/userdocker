@@ -131,6 +131,14 @@ ARGS_AVAILABLE = {
 VOLUME_MOUNTS_ALWAYS = []
 VOLUME_MOUNTS_AVAILABLE = []
 VOLUME_MOUNTS_DEFAULT = [
+    # Mount /etc/{passwd,groups} for correct uid,gid display in containers.
+    # Not enabling this has mostly cosmetic effects. All mappings to the host
+    # file system are via uid:gid.
+    # WARNING: not enabled by default, as systems using ldap usually do not
+    # offer the necessary information in these files, but via getent.
+    # '/etc/passwd:/etc/passwd:ro',
+    # '/etc/group:/etc/group:ro',
+
     # default mount user's home
     user_home + ':' + user_home,
 ]
