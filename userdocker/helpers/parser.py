@@ -34,6 +34,8 @@ def init_subcommand_parser(parent_parser, scmd):
         # remove dups (e.g. from being in AVAILABLE and ALWAYS)
         args = [arg for arg in args if arg not in _args_seen]
         _args_seen.extend(args)
+        if not args:
+            continue
 
         # make sure arg starts with - and doesn't contain = or ' '
         for arg in args:
