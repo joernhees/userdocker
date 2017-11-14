@@ -42,10 +42,18 @@ def parser_run(parser):
         action="store_true",
     )
 
-    if VOLUME_MOUNTS_ALWAYS or VOLUME_MOUNTS_AVAILABLE or VOLUME_MOUNTS_DEFAULT:
+    mounts_help = []
+    if VOLUME_MOUNTS_ALWAYS:
+        mounts_help += ['Admin enforced: %s.' % ', '.join(VOLUME_MOUNTS_ALWAYS)]
+    if VOLUME_MOUNTS_DEFAULT:
+        mounts_help += ['Default: %s.' % ', '.join(VOLUME_MOUNTS_DEFAULT)]
+    if VOLUME_MOUNTS_AVAILABLE:
+        mounts_help += ['Available: %s.' % ', '.join(VOLUME_MOUNTS_AVAILABLE)]
+    if mounts_help:
         sub_parser.add_argument(
             "-v", "--volume",
-            help="user specified volume mounts (can be given multiple times)",
+            help="user specified volume mounts (can be given multiple times). "
+                 "%s" % " ".join(mounts_help),
             action="append",
             dest="volumes",
             default=[],
@@ -73,7 +81,7 @@ def parser_run(parser):
 
     sub_parser.add_argument(
         "image",
-        help="the image to run",
+        help="the image to run. Allowed: " + ', '.join(ALLOWED_IMAGE_REGEXPS),
     )
 
     sub_parser.add_argument(
