@@ -6,36 +6,6 @@ import os
 import pwd
 
 
-# The order of config files is (if existing):
-# - package defaults
-# - /etc/userdocker/config.py
-# - /etc/userdocker/group/config_<prio>_<group_name>.py (see note below)
-# - /etc/userdocker/gid/config_<prio>_<gid>.py (see note below)
-# - /etc/userdocker/user/config_<user_name>.py
-# - /etc/userdocker/uid/config_<uid>.py
-#
-# All config files are executed in place, allowing later config files to
-# override or modify previous ones. The above might sound complicated, but just
-# start with a /etc/userdocker/config.py and then define exceptions later.
-#
-# As a user can be in several groups, the group configs include a 2 digit prio.
-# On execution, we will get all groups for the user, collect the corresponding
-# config files matching those groups if they exist and load all collected
-# config files sorted ascending by prio. Lowest prio is 00 (loaded first),
-# highest prio is 99 (loaded last).
-# Afterwards the same is done for gid config files.
-
-# Example: if a user is in groups "adm" and "udocker" and an admin created the
-# config files config_99_adm.py and config_50_udocker.py, then the execution
-# order is:
-# - /etc/userdocker/group.py
-# - /etc/userdocker/group/config_50_udocker.py
-# - /etc/userdocker/group/config_99_adm.py
-# - ...
-# This means that config_99_adm.py can grant users in group adm a lot more
-# permissions (reliably), even if they are also in the udocker group.
-
-
 uid = os.getuid()
 uid = int(os.getenv('SUDO_UID', uid))
 gid = os.getgid()
@@ -72,3 +42,20 @@ for _cfn in _cfns:
     with open(_cfn) as _cf:
         exec(_cf.read())
         configs_loaded.append(_cfn)
+
+
+# helpers to show final config
+def items():
+    masked = (
+        # imports:
+        'default', 'glob', 'grp', 'os', 'pwd',
+        # methods:
+        'items', 'path',
+    )
+    for _var, _val in sorted(globals().items()):
+        if not _var.startswith('_') and _var not in masked:
+            yield _var, _val
+
+
+def path():
+    return os.path.dirname(os.path.realpath(__file__))
