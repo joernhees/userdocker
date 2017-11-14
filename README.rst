@@ -116,9 +116,15 @@ This will give you a ``userdocker`` command that you can test with:
 
     userdocker -h
 
-The above is the preferable way of installation.
+The above is the preferable way of installation of the latest stable release.
 
-Alternatively, you can clone this repo and execute:
+If you want to try the current master (stable dev):
+
+.. code-block:: bash
+
+    sudo pip3 install -U https://github.com/joernhees/userdocker/archive/master.tar.gz
+
+Alternatively (and to contribute), you can clone this repo and execute:
 
 .. code-block:: bash
 
