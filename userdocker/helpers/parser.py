@@ -7,12 +7,10 @@ from ..config import ARGS_AVAILABLE
 
 
 def init_subcommand_parser(parent_parser, scmd):
-    kwds = {
-        "help": 'Lets a user run "docker %s ..." command' % scmd,
-    }
-    if sys.version_info > (3, 5):
-        kwds['allow_abbrev'] = False
-    parser = parent_parser.add_parser(scmd, **kwds)
+    parser = parent_parser.add_parser(
+        scmd,
+        help='Lets a user run "docker %s ..." command' % scmd,
+    )
     parser.set_defaults(
         patch_through_args=[],
     )

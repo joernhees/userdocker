@@ -17,13 +17,10 @@ from .subcommands import specific_parsers
 
 
 def parse_args():
-    kwds = {
-        "description": __doc__.strip(),
-        "formatter_class": argparse.ArgumentDefaultsHelpFormatter,
-    }
-    if sys.version_info > (3, 5):
-        kwds['allow_abbrev'] = False
-    parser = argparse.ArgumentParser(**kwds)
+    parser = argparse.ArgumentParser(
+        description=__doc__.strip(),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     parser.add_argument(
         "--version",
