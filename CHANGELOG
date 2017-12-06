@@ -1,3 +1,31 @@
+Version 2.1.0
+=============
+
+This is a minor release.
+
+New features:
+-------------
+
+- NV_ALLOW_OWN_GPU_REUSE allows users to run further containers on GPUs they
+  already use. Will only happen when explicitly requesting a GPU via NV_GPU, not
+  when implicitly assigning a new GPU.
+
+Minor improvements:
+-------------------
+
+- Print warnings in case no config.py is found, #2
+- Enhanced docs for mounting /etc/{passwd,group} for uid to username mappings in
+  containers, #5
+- Help now lists available mounts and allowed images
+
+Bug fixes:
+----------
+
+- Removed allow_abbrev to allow flag combinations, #3
+- Fixed parsing dups bug in ARGS_AVAILABLE and ARGS_ALWAYS, #4
+
+
+
 Version 2.0.0
 =============
 
