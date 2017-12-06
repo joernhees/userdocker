@@ -12,10 +12,10 @@ from ..config import CAPS_ADD
 from ..config import CAPS_DROP
 from ..config import ENV_VARS
 from ..config import ENV_VARS_EXT
+from ..config import NV_ALLOW_OWN_GPU_REUSE
 from ..config import NV_ALLOWED_GPUS
 from ..config import NV_DEFAULT_GPU_COUNT_RESERVATION
 from ..config import NV_MAX_GPU_COUNT_RESERVATION
-from ..config import NV_GPU_ALLOW_SAME_USER_RESERVATION
 from ..config import PROBE_USED_MOUNTS
 from ..config import RUN_PULL
 from ..config import USER_IN_CONTAINER
@@ -133,16 +133,20 @@ def prepare_nvidia_docker_run(args):
 
         # check if available
         gpus_available, own_gpus = nvidia_get_available_gpus(args.executor_path)
-        if NV_GPU_ALLOW_SAME_USER_RESERVATION:
+        if NV_ALLOW_OWN_GPU_REUSE:
             gpus_available.extend(own_gpus)
         for g in nv_gpus:
             if g not in gpus_available:
-                raise UserDockerException(
+                msg = (
                     'ERROR: GPU %d is currently not available!\nUse:\n'
                     '"sudo userdocker ps --gpu-free" to find available GPUs.\n'
                     '"sudo userdocker ps --gpu-used" and "nvidia-smi" to see '
                     'status.' % g
                 )
+                if NV_ALLOW_OWN_GPU_REUSE and own_gpus:
+                    msg += '\n"sudo userdocker ps --gpu-used-mine to show own' \
+                           '(reusable) GPUs.'
+                raise UserDockerException(msg)
     else:
         # NV_GPU wasn't set, use admin defaults, tell user
         gpu_default = NV_DEFAULT_GPU_COUNT_RESERVATION
@@ -153,11 +157,14 @@ def prepare_nvidia_docker_run(args):
         gpus_available, own_gpus = nvidia_get_available_gpus(args.executor_path)
         gpus = gpus_available[:gpu_default]
         if len(gpus) < gpu_default:
-            msg = ('Could not find %d available GPU(s)!\nUse:\n'
-                   '"sudo userdocker ps --gpu-used" and "nvidia-smi" to see '
-                   'status.' % gpu_default)
-            if NV_GPU_ALLOW_SAME_USER_RESERVATION and own_gpus:
-                msg += ' Set NV_GPU to reuse a GPU you have already reserved.'
+            msg = (
+                'Could not find %d available GPU(s)!\nUse:\n'
+                '"sudo userdocker ps --gpu-used" and "nvidia-smi" to see '
+                'status.' % gpu_default
+            )
+            if NV_ALLOW_OWN_GPU_REUSE and own_gpus:
+                msg += '\n You can set NV_GPU to reuse a GPU you have already' \
+                       ' reserved.'
             raise UserDockerException(msg)
         gpu_env = ",".join([str(g) for g in gpus])
         logger.info("Setting NV_GPU=%s" % gpu_env)

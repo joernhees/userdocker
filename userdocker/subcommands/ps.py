@@ -17,20 +17,20 @@ def parser_ps(parser):
     )
 
     arg_group.add_argument(
+        "--gpu-used-mine",
+        help="show GPUs reserved by your containers",
+        action="store_true",
+    )
+
+    arg_group.add_argument(
         "--gpu-free",
         help="show allowed and free GPUs (asc by MB mem used)",
         action="store_true",
     )
 
-    arg_group.add_argument(
-        "--gpu-reserved",
-        help="show GPUs reserved by your containers",
-        action="store_true",
-    )
-
 
 def exec_cmd_ps(args):
-    if not args.gpu_used and not args.gpu_free and not args.gpu_reserved:
+    if not args.gpu_used and not args.gpu_free and not args.gpu_used_mine:
         exit_exec_cmd(init_cmd(args), dry_run=args.dry_run)
 
     if args.gpu_used:
@@ -40,11 +40,11 @@ def exec_cmd_ps(args):
         for i, l in sorted(gpus_used.items()):
             for container, container_name, user, _ in sorted(l):
                 print("\t".join((str(i), container, container_name, user)))
+    elif args.gpu_used_mine:
+        available_gpus, own_gpus = nvidia_get_available_gpus(args.executor_path)
+        for gpu in own_gpus:
+            print(gpu)
     elif args.gpu_free:
         available_gpus, own_gpus = nvidia_get_available_gpus(args.executor_path)
         for gpu in available_gpus:
-            print(gpu)
-    elif args.gpu_reserved:
-        available_gpus, own_gpus = nvidia_get_available_gpus(args.executor_path)
-        for gpu in own_gpus:
             print(gpu)

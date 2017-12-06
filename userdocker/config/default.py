@@ -231,10 +231,12 @@ ENV_VARS_EXT = {
 #   Setting this to -1 results in GPUs always being regarded as available.
 # - If NV_EXCLUSIVE_GPU_RESERVATION is set, any GPUs already used in any other
 #   container are regarded as unavailable for this container.
+# - NV_ALLOW_OWN_GPU_REUSE allows users to run multiple containers on GPUs they
+#   already use. This only happens when explicitly setting NV_GPU.
 NVIDIA_SMI = '/usr/bin/nvidia-smi'  # path to nvidia-smi
 NV_ALLOWED_GPUS = 'ALL'  # otherwise a list like [1, 3]. [] for none.
 NV_DEFAULT_GPU_COUNT_RESERVATION = 1
 NV_MAX_GPU_COUNT_RESERVATION = -1
 NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED = 0
 NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION = True
-NV_GPU_ALLOW_SAME_USER_RESERVATION = True
+NV_ALLOW_OWN_GPU_REUSE = True
