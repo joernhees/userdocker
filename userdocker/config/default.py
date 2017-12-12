@@ -63,6 +63,7 @@ ALLOWED_SUBCOMMANDS = [
     'ps',
     'pull',  # see RUN_PULL as well
     'run',
+    'stop',
     'version',
 ]
 

@@ -6,6 +6,7 @@ from .images import *
 from .ps import *
 from .pull import *
 from .run import *
+from .stop import *
 from .version import *
 
 SPECIFIC_PARSER_PREFIX = 'parser_'

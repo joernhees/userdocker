@@ -5,30 +5,22 @@ from ..helpers.execute import exit_exec_cmd
 from ..helpers.owner import check_container_owner
 from ..helpers.parser import init_subcommand_parser
 
-def parser_attach(parser):
-    sub_parser = init_subcommand_parser(parser, 'attach')
-
-    sub_parser.add_argument(
-        "--detach-keys",
-        help="Override the key sequence for detaching a container",
-    )
+def parser_stop(parser):
+    sub_parser = init_subcommand_parser(parser, 'stop')
 
     sub_parser.add_argument(
         "container",
-        help="container's ID or name to attach to"
+        help="container's ID or name to stop"
     )
 
 
-def exec_cmd_attach(args):
+def exec_cmd_stop(args):
     cmd = init_cmd(args)
-
-    if args.detach_keys:
-        cmd += ['--detach-keys', args.detach_keys]
 
     container = args.container
     cmd += [container]
 
-    # check if we're allowed to attach to container (if it's ours)
+    # check if we're allowed to stop container (if it's ours)
     check_container_owner(container, args)
 
     exit_exec_cmd(cmd, dry_run=args.dry_run)
