@@ -46,6 +46,7 @@ for _cfn in _cfns:
 
 # helpers to show final config
 def items():
+    """Return configuration items."""
     masked = (
         # imports:
         'default', 'glob', 'grp', 'os', 'pwd',
@@ -58,4 +59,5 @@ def items():
 
 
 def path():
+    """Return the config file path."""
     return os.path.dirname(os.path.realpath(__file__))

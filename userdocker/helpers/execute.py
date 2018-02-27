@@ -10,7 +10,21 @@ from .exceptions import UserDockerException
 from .logger import logger
 
 
-def exec_cmd(cmd, dry_run=False, return_status=True, loglvl=logging.INFO):
+def exec_cmd(cmd: list, dry_run: bool=False, return_status: bool=True, loglvl: int=logging.INFO):
+    """Execute the given command.
+
+    Args:
+        cmd: The command as a list of arguments.
+        dry_run: If true, the command will not be executed but only printed.
+        return_status: Whether to return the status code of the command.
+        loglvl: Log level to be used during the invocation of the command.
+
+    Returns:
+        The command output or status code, depending on ``return_status``.
+
+    Raises:
+        UserDockerException: If the executor can't be found.
+    """
     logger.log(
         loglvl,
         '%s command: %s',
@@ -38,5 +52,6 @@ def exec_cmd(cmd, dry_run=False, return_status=True, loglvl=logging.INFO):
         sys.exit(ret)
 
 
-def exit_exec_cmd(cmd, dry_run=False):
+def exit_exec_cmd(cmd: list, dry_run: bool=False) -> None:
+    """Execute the given command and exit."""
     sys.exit(exec_cmd(cmd, dry_run=dry_run))

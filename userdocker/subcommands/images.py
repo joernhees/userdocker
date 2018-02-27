@@ -6,6 +6,7 @@ from ..helpers.parser import init_subcommand_parser
 
 
 def parser_images(parser):
+    """Create parser for images subcommand."""
     sub_parser = init_subcommand_parser(parser, 'images')
 
     sub_parser.add_argument(
@@ -16,8 +17,11 @@ def parser_images(parser):
 
 
 def exec_cmd_images(args):
+    """Execute image subcommand."""
     cmd = init_cmd(args)
+
     if args.repo_tag:
         cmd.append("--")
         cmd.append(args.repo_tag)
+
     exit_exec_cmd(cmd, dry_run=args.dry_run)

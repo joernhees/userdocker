@@ -5,7 +5,9 @@ from ..helpers.execute import exit_exec_cmd
 from ..helpers.owner import check_container_owner
 from ..helpers.parser import init_subcommand_parser
 
+
 def parser_stop(parser):
+    """Create parser for the stop subcommand."""
     sub_parser = init_subcommand_parser(parser, 'stop')
 
     sub_parser.add_argument(
@@ -15,6 +17,11 @@ def parser_stop(parser):
 
 
 def exec_cmd_stop(args):
+    """Execute the stop subcommand.
+
+    A check is performed to make sure that users can only attach to containers
+    they own.
+    """
     cmd = init_cmd(args)
 
     container = args.container

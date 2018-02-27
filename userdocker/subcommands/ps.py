@@ -7,6 +7,13 @@ from ..helpers.parser import init_subcommand_parser
 
 
 def parser_ps(parser):
+    """Create parser for the ps subcommand.
+
+    In addition to the arguments known from ``docker ps``, the userdocker ps
+    subbcommand additionally supports the arguments ``--gpu-used``,
+    ``--gpu-used-mine``, and ``gpu-free``. See the help for further
+    information.
+    """
     sub_parser = init_subcommand_parser(parser, 'ps')
 
     arg_group = sub_parser.add_mutually_exclusive_group()
@@ -30,6 +37,7 @@ def parser_ps(parser):
 
 
 def exec_cmd_ps(args):
+    """Execute the ps subcommand."""
     if not args.gpu_used and not args.gpu_free and not args.gpu_used_mine:
         exit_exec_cmd(init_cmd(args), dry_run=args.dry_run)
 

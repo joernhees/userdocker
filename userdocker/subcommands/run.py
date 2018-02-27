@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import re
+import subprocess
 
 from .. import __version__
 from ..config import ALLOWED_IMAGE_REGEXPS
@@ -35,6 +36,10 @@ from ..helpers.parser import init_subcommand_parser
 
 
 def parser_run(parser):
+    """Create parser for the run subcommand.
+
+    See the config file for details on the available arguments and options.
+    """
     sub_parser = init_subcommand_parser(parser, 'run')
 
     sub_parser.add_argument(
@@ -60,16 +65,6 @@ def parser_run(parser):
             default=[],
         )
 
-    sub_parser.add_argument(
-        "--entrypoint",
-        help="Overwrite the default ENTRYPOINT of the image",
-    )
-
-    sub_parser.add_argument(
-        "-w", "--workdir",
-        help="Working directory inside the container",
-    )
-
     if ALLOWED_PORT_MAPPINGS:
         sub_parser.add_argument(
             "-p", "--publish",
@@ -93,8 +88,11 @@ def parser_run(parser):
 
 
 def prepare_nvidia_docker_run(args):
-    # mainly handles GPU arbitration via ENV var for nvidia-docker
-    # note that these are ENV vars for the command, not the container
+    """Prepare the execution of the run subcommand for nvidia-docker.
+
+    Mainly handles GPU arbitration via ENV var for nvidia-docker. Note that
+    these are ENV vars for the command, not the container.
+    """
 
     if os.getenv('NV_HOST'):
         raise UserDockerException('ERROR: NV_HOST env var not supported yet')
@@ -172,6 +170,7 @@ def prepare_nvidia_docker_run(args):
 
 
 def exec_cmd_run(args):
+    """Execute the run subcommand."""
     cmd = init_cmd(args)
 
     # check port mappings
@@ -230,9 +229,12 @@ def exec_cmd_run(args):
     mount_host_paths = [m.split(':')[0] for m in mounts]
     for ms in mount_host_paths:
         if not os.path.exists(ms):
-            raise UserDockerException(
-                "ERROR: mount can't be found: %s" % ms
-            )
+            logger.warn("Mount {0} does not exist, trying to create it."
+                        .format(ms))
+            if subprocess.call(["/usr/bin/mkdir", "-p", ms]) != 0:
+                raise UserDockerException(
+                    "ERROR: mount could not be created: {0}".format(ms)
+                )
         if PROBE_USED_MOUNTS and os.path.isdir(ms):
             os.listdir(ms)
 
@@ -260,11 +262,6 @@ def exec_cmd_run(args):
         cmd += ["--cap-drop=%s" % cap_drop]
     for cap_add in CAPS_ADD:
         cmd += ["--cap-add=%s" % cap_add]
-
-    if args.workdir:
-        cmd += ["-w", args.workdir]
-    if args.entrypoint:
-        cmd += ["--entrypoint", args.entrypoint]
 
     # additional injection protection, deactivated for now due to nvidia-docker
     # unability to handle this

@@ -67,21 +67,64 @@ ALLOWED_SUBCOMMANDS = [
     'version',
 ]
 
-# Simple arguments without options (flags):
-# Arguments (without options) that you want to enforce on the user:
+# Arguments:
+# Arguments can be specified in four different ways:
+# 1) As a short argument (flag): '-f'
+# 2) As a long argument (flag): '--flag'
+# 3) As a short argument with a value: '-f value' or '-f=value' or '-f="value"'
+# 3) As a long argument with a value: '--flag=value' or '--flag value' or
+#    '--flag="value"'
+#
+# Use an empty value (e.g. '-f=') to allow all possible values for the given
+# argument.
+#
+# These can be combined in lists or tuples as follows:
+# 1) As a combination of one or more short and long options: ['--flag', '-f']
+# 2) As a combination of one or more long options with values:
+#   ['--flag=val1', '--flag="val2 val3"']
+# Note that for these lists/tuples, only the _first_ argument will be used to
+# determine what to pass on to the executor, so make sure to put aliases last:
+#   ['--real-flag', '--alias']
+# When specifying several values for an argument, it is not necessary to repeat
+# the argument each time (it is possible to add aliases though):
+#   ['--flag=val', '=val2', '=val3 val4'], or
+#   ['--flag=val', '--alias1=val2', '--alias2=val3 val4']
+#
+# When specifying arguments via ARGS_ALWAYS or ARGS_DEFAULT, always use the
+# 'real flag', i.e. the first flag listed in the corresponding entry in
+# ARGS_AVAILABLE, or else these arguments will be passed on twice and an error
+# will be thrown by the executor.
+
+# Arguments that you want to enforce on the user:
 # Do not include args that are handled below (e.g. run -v)!
-# The following arguments will always be injected for the corresponding command:
+# See explanation above on how to specify arguments.
+# Combinations as tuples / lists are not supported here.
+# The following arguments will always be injected for the corresponding
+# subcommand:
 ARGS_ALWAYS = {
     'run': [
-        # '-t',
+        # '--example=value with spaces',
         # '-i',
+        # '-t',
         '--rm',
     ],
 }
+
+# These arguments will be passed to the executor unless the user overrides them
+# with one of the available values in ARGS_AVAILABLE or disables default
+# arguments using the --no-default-args switch.
+# For flags, this acts much like ARGS_ALWAYS unless the user disables default
+# args completely.
+# Combinations as tuples / lists are not supported here.
+ARGS_DEFAULT = {
+
+}
+
 # The following arguments (without options) are available to the user for the
 # given command.
 # Do not include args that are handled below (e.g. run -v)!
-# (aliases are supported as tuples below, but not in ARGS_ALWAYS)
+# See explanation above on how to specify arguments.
+# Combinations are supported as tuples / lists here.
 ARGS_AVAILABLE = {
     'attach': [
         '--no-stdin',
@@ -111,6 +154,9 @@ ARGS_AVAILABLE = {
         '--read-only',
         # users can map all exposed container ports to random free host ports:
         ('-P', '--publish-all'),
+        # workdir and entrypoint can be chosen freely
+        ('--workdir=', '-w'),
+        '--entrypoint=',
     ],
 }
 

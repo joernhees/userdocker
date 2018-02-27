@@ -6,6 +6,7 @@ from ..helpers.owner import check_container_owner
 from ..helpers.parser import init_subcommand_parser
 
 def parser_attach(parser):
+    """Create parser for the attach subcommand."""
     sub_parser = init_subcommand_parser(parser, 'attach')
 
     sub_parser.add_argument(
@@ -20,6 +21,11 @@ def parser_attach(parser):
 
 
 def exec_cmd_attach(args):
+    """Execute the attach subcommand.
+
+    A check is performed to make sure that users can only attach to containers
+    they own.
+    """
     cmd = init_cmd(args)
 
     if args.detach_keys:

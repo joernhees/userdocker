@@ -8,8 +8,20 @@ from ..helpers.exceptions import UserDockerException
 from ..helpers.execute import exec_cmd
 from ..helpers.logger import logger
 
-def check_container_owner(container, args):
-    # check if we're allowed to interact with container (if it's ours)
+def check_container_owner(container: str, args) -> None:
+    """Check if the user is allowed to interact with the container.
+
+    Users are allowed to interact with containers they own (i.e. have started).
+
+    Args:
+        container: Name or ID of the container.
+        args (argparse.Namespace): Command arguments.
+
+    Raises:
+        UserDockerException: If the given container was not started by
+            ``userdocker`` or the container is owned by another user.
+    """
+
     container_env = exec_cmd(
         [
             args.executor_path, 'inspect',

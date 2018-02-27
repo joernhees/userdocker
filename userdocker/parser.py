@@ -2,7 +2,6 @@
 
 import argparse
 import logging
-import sys
 
 from . import __doc__
 from . import __version__
@@ -49,6 +48,12 @@ def parse_args():
     parser.add_argument(
         "-n", "--dry-run",
         help="doesn't actually invoke the docker command",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "--no-default-args",
+        help="do not include default subcommand arguments specified in the config",
         action="store_true",
     )
 

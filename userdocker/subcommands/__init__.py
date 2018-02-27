@@ -9,6 +9,8 @@ from .run import *
 from .stop import *
 from .version import *
 
+"""Contains the parsers for the docker subcommands."""
+
 SPECIFIC_PARSER_PREFIX = 'parser_'
 specific_parsers = {
     _var.split(SPECIFIC_PARSER_PREFIX)[1]: _val

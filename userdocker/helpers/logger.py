@@ -7,7 +7,8 @@ from .. import config
 logger = logging.getLogger('userdocker')
 
 
-def logger_setup(args):
+def logger_setup(args) -> None:
+    """Set up logging and print loaded config."""
     logging.basicConfig()
     logging.root.setLevel(args.loglvl)
     if logger.isEnabledFor(logging.DEBUG):

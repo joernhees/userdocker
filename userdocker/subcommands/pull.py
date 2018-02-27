@@ -6,6 +6,7 @@ from ..helpers.parser import init_subcommand_parser
 
 
 def parser_pull(parser):
+    """Create parser for the pull subcommand."""
     sub_parser = init_subcommand_parser(parser, 'pull')
 
     sub_parser.add_argument(
@@ -15,6 +16,7 @@ def parser_pull(parser):
 
 
 def exec_cmd_pull(args):
+    """Execute pull subcommand."""
     cmd = init_cmd(args)
     if args.name_tag_digest:
         cmd.append("--")
