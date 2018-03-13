@@ -6,28 +6,12 @@ import re
 from collections import defaultdict
 from typing import Tuple
 
-from ..config import uid
-from ..config import NVIDIA_SMI
-from ..config import NV_ALLOWED_GPUS
-from ..config import NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION
-from ..config import NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
+from ..config import uid, NVIDIA_SMI, NV_ALLOWED_GPUS, \
+    NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION, \
+    NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED
 from .logger import logger
 from .execute import exec_cmd
-
-
-def container_find_userdocker_user_uid(container_env: dict) -> Tuple[str, int]:
-    """Find and return userdocker username and user ID.
-
-    Args:
-        container_env: Container environment variables.
-
-    Returns:
-        The username (or '') and user ID (or None) of the userdocker user.
-    """
-    pairs = [var.partition('=') for var in container_env]
-    users = [v for k, _, v in pairs if k == 'USERDOCKER_USER']
-    uids = [v for k, _, v in pairs if k == 'USERDOCKER_UID']
-    return users[0] if users else '', int(uids[0]) if uids else None
+from .container import container_get_running, container_find_userdocker_user_uid
 
 
 def nvidia_get_gpus_used_by_containers(docker: str) -> defaultdict:
@@ -41,11 +25,7 @@ def nvidia_get_gpus_used_by_containers(docker: str) -> defaultdict:
             ``(container, container_name, container_user, container_uid)``
     """
 
-    running_containers = exec_cmd(
-        [docker, 'ps', '-q'],
-        return_status=False,
-        loglvl=logging.DEBUG,
-    ).split()
+    running_containers = container_get_running(docker)
 
     gpu_used_by_containers = defaultdict(list)
 
@@ -81,23 +61,21 @@ def nvidia_get_gpus_used_by_containers(docker: str) -> defaultdict:
                 )
     return gpu_used_by_containers
 
-"""Return the available GPUs.
 
-Availability of GPUs depends on:
-- ``NV_ALLOWED_GPUS``: GPUs not in this list are generally not available
-- ``NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED``: if more than this amount of memory
-        is used, a GPU is considered unavailable
-- ``NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION``: if ``True``, GPUs used by other
-        containers are considered unavailable
-
-See the configuration file for additional details.
-
-Args:
-
-"""
 def nvidia_get_available_gpus(docker: str, nvidia_smi: str=NVIDIA_SMI) -> Tuple[list, list]:
+    """Return the available GPUs.
+
+    Availability of GPUs depends on:
+    - ``NV_ALLOWED_GPUS``: GPUs not in this list are generally not available
+    - ``NV_GPU_UNAVAILABLE_ABOVE_MEMORY_USED``: if more than this amount of memory
+            is used, a GPU is considered unavailable
+    - ``NV_EXCLUSIVE_CONTAINER_GPU_RESERVATION``: if ``True``, GPUs used by other
+            containers are considered unavailable
+
+    See the configuration file for additional details.
+    """
     if not NV_ALLOWED_GPUS:
-        return (list(), list())
+        return list(), list()
 
     gpu_mem_used_str = exec_cmd(
         [nvidia_smi,

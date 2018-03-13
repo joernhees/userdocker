@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from ..helpers.cmd import init_cmd
 from ..helpers.execute import exit_exec_cmd
+from ..helpers.logger import logger
 from ..helpers.owner import check_container_owner
 from ..helpers.parser import init_subcommand_parser
 
@@ -36,5 +39,7 @@ def exec_cmd_attach(args):
 
     # check if we're allowed to attach to container (if it's ours)
     check_container_owner(container, args)
+
+    logger.info("Press enter if the shell does not appear")
 
     exit_exec_cmd(cmd, dry_run=args.dry_run)

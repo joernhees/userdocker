@@ -27,6 +27,7 @@ from ..config import gid
 from ..config import uid
 from ..config import user_name
 from ..helpers.cmd import init_cmd
+from ..helpers.container import container_get_next_name
 from ..helpers.exceptions import UserDockerException
 from ..helpers.execute import exec_cmd
 from ..helpers.execute import exit_exec_cmd
@@ -74,6 +75,11 @@ def parser_run(parser):
             dest="port_mappings",
             default=[],
         )
+
+    sub_parser.add_argument(
+        "--name",
+        help="container name. Your username plus a number by default.",
+    )
 
     sub_parser.add_argument(
         "image",
@@ -262,6 +268,10 @@ def exec_cmd_run(args):
         cmd += ["--cap-drop=%s" % cap_drop]
     for cap_add in CAPS_ADD:
         cmd += ["--cap-add=%s" % cap_add]
+
+    # add default container name if not specified by the user
+    if not args.name:
+        cmd += ['--name', container_get_next_name(args.executor_path)]
 
     # additional injection protection, deactivated for now due to nvidia-docker
     # unability to handle this

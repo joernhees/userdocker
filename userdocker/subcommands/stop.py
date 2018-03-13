@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import argparse
+
 from ..helpers.cmd import init_cmd
 from ..helpers.execute import exit_exec_cmd
 from ..helpers.owner import check_container_owner
@@ -11,23 +13,23 @@ def parser_stop(parser):
     sub_parser = init_subcommand_parser(parser, 'stop')
 
     sub_parser.add_argument(
-        "container",
-        help="container's ID or name to stop"
+        "containers",
+        help="one or more container IDs or names to stop",
+        nargs=argparse.REMAINDER
     )
 
 
 def exec_cmd_stop(args):
     """Execute the stop subcommand.
 
-    A check is performed to make sure that users can only attach to containers
-    they own.
+    A check is performed to make sure that users can only stop containers they
+    own.
     """
     cmd = init_cmd(args)
 
-    container = args.container
-    cmd += [container]
-
-    # check if we're allowed to stop container (if it's ours)
-    check_container_owner(container, args)
+    for container in args.containers:
+        cmd += [container]
+        # check if we're allowed to stop container (if it's ours)
+        check_container_owner(container, args)
 
     exit_exec_cmd(cmd, dry_run=args.dry_run)

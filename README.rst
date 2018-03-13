@@ -1,3 +1,16 @@
+userdocker-diffproml
+===================
+
+``userdocker-diffproml`` is a fork of userdocker which adds the following features:
+
+- support for arguments with values (as opposed to just flags) in the config files
+- support for the docker ``stop`` subcommand
+- automatic container names based on the username
+
+These features will be merged into the userdocker if and when the original author approves of the changes.
+
+``userdocker-diffproml`` has received partial funding from the German Federal Ministry for Education and Research under grant agreement n° 01|S17075.
+
 Userdocker
 ==========
 
@@ -32,7 +45,8 @@ docker command.
 
 Feedback / bugreports / contributions welcome:
 
-https://github.com/joernhees/userdocker
+https://github.com/saviola777/userdocker (this fork)
+https://github.com/joernhees/userdocker (original repository)
 
 
 Sample Usage:
@@ -52,6 +66,9 @@ Sample Usage:
 
     # (docker attach) re-attach to own container after connection loss
     sudo userdocker attach 438c7648e76b
+
+    # (docker stop) stop own container
+    sudo userdocker stop 438c7648e76b
 
     # (docker ps) list running containers
     sudo userdocker ps
@@ -122,7 +139,7 @@ If you want to try the current master (stable dev):
 
 .. code-block:: bash
 
-    sudo pip3 install -U https://github.com/joernhees/userdocker/archive/master.tar.gz
+    sudo pip3 install -U https://github.com/saviola777/userdocker/archive/master.tar.gz
 
 Alternatively (and to contribute), you can clone this repo and execute:
 

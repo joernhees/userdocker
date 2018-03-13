@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from ..helpers.cmd import init_cmd
+from ..helpers.container import container_find_userdocker_user_uid, \
+    container_get_running
 from ..helpers.execute import exit_exec_cmd
 from ..helpers.nvidia import nvidia_get_available_gpus
 from ..helpers.nvidia import nvidia_get_gpus_used_by_containers
@@ -43,11 +45,10 @@ def exec_cmd_ps(args):
 
     if args.gpu_used:
         gpus_used = nvidia_get_gpus_used_by_containers(args.executor_path)
-        if gpus_used:
-            print("\t".join(("GPU", "Container", "ContainerName", "User")))
+        print("\t".join(("GPU", "Container", "ContainerName", "User")))
         for i, l in sorted(gpus_used.items()):
             for container, container_name, user, _ in sorted(l):
-                print("\t".join((str(i), container, container_name, user)))
+                print("\t".join((str(i), container[:12], container_name, user)))
     elif args.gpu_used_mine:
         available_gpus, own_gpus = nvidia_get_available_gpus(args.executor_path)
         for gpu in own_gpus:
