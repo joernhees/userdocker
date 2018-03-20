@@ -1,4 +1,25 @@
-Version 2.1.0
+userdocker-diffproml Version 1.0.0
+=============
+
+First release of the ``userdocker-diffproml`` fork, based on ``userdocker``
+version 2.1.0.
+
+New features:
+-------------
+
+- support for arguments with values (as opposed to just flags) in the config
+  files
+- support for the docker ``stop`` subcommand
+- automatic container names based on the username #1
+
+Minor improvements:
+-------------------
+
+- add message during ``userdocker attach`` prompting the user to press enter
+- make ``userdocker ps`` subcommand consistent with ``docker ps`` in that it
+  always prints the header even if no other data is available
+
+userdocker Version 2.1.0
 =============
 
 This is a minor release.
@@ -13,20 +34,20 @@ New features:
 Minor improvements:
 -------------------
 
-- Print warnings in case no config.py is found, #2
+- Print warnings in case no config.py is found, joernhees/userdocker#2
 - Enhanced docs for mounting /etc/{passwd,group} for uid to username mappings in
-  containers, #5
+  containers, joernhees/userdocker#5
 - Help now lists available mounts and allowed images
 
 Bug fixes:
 ----------
 
-- Removed allow_abbrev to allow flag combinations, #3
-- Fixed parsing dups bug in ARGS_AVAILABLE and ARGS_ALWAYS, #4
+- Removed allow_abbrev to allow flag combinations, joernhees/userdocker#3
+- Fixed parsing dups bug in ARGS_AVAILABLE and ARGS_ALWAYS, joernhees/userdocker#4
 
 
 
-Version 2.0.0
+userdocker Version 2.0.0
 =============
 
 This is a major release.
@@ -79,7 +100,7 @@ Bug fixes:
 
 
 
-Version 1.0.1
+userdocker Version 1.0.1
 =============
 
 This is a patch release.
@@ -91,7 +112,7 @@ Bug fixes:
 
 
 
-Version 1.0.0
+userdocker Version 1.0.0
 =============
 
 Initial release.

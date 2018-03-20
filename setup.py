@@ -12,13 +12,13 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='userdocker',
+    name='userdocker-diffproml',
     version=__version__,
     description=__doc__.strip().splitlines()[0].strip(),
     long_description=long_description,
-    url='https://github.com/joernhees/userdocker',
-    author='Jörn Hees',
-    author_email='dev+userdocker@joernhees.de',
+    url='https://github.com/saviola777/userdocker',
+    author='Johannes Rückert',
+    author_email='johannes.rueckert@fh-dortmund.de',
     license='MIT',
     classifiers=[
         'Development Status :: 4 - Beta',

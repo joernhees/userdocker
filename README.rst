@@ -1,15 +1,21 @@
 userdocker-diffproml
 ===================
 
-``userdocker-diffproml`` is a fork of userdocker which adds the following features:
+``userdocker-diffproml`` is a fork of ``userdocker`` which adds the following
+features:
 
-- support for arguments with values (as opposed to just flags) in the config files
+- support for arguments with values (as opposed to just flags) in the config
+  files
 - support for the docker ``stop`` subcommand
 - automatic container names based on the username
 
-These features will be merged into the userdocker if and when the original author approves of the changes.
+These features will be merged into userdocker if and when the original author
+approves of the changes. At the moment it is not possible to install
+``userdocker-diffproml`` alongside ``userdocker``, since the use the same paths
+and executables.
 
-``userdocker-diffproml`` has received partial funding from the German Federal Ministry for Education and Research under grant agreement n° 01|S17075.
+``userdocker-diffproml`` has received partial funding from the German Federal
+Ministry for Education and Research under grant agreement n° 01|S17075.
 
 Userdocker
 ==========
@@ -109,7 +115,7 @@ Features:
 Installation:
 =============
 
-The installation of userdocker works in three steps:
+The installation of ``userdocker-diffproml`` works in three steps:
 
 
 1. Install package:
@@ -121,17 +127,11 @@ First make sure that docker is installed:
 
     sudo docker version
 
-Afterwards, as userdocker is written in python3 and available as python package:
+Afterwards, as ``userdocker-diffproml`` is written in python3 and not yet available as python package:
 
 .. code-block:: bash
 
-    sudo pip3 install userdocker
-
-This will give you a ``userdocker`` command that you can test with:
-
-.. code-block:: bash
-
-    userdocker -h
+    sudo pip3 install -U https://github.com/saviola777/userdocker/archive/1.0.0.tar.gz
 
 The above is the preferable way of installation of the latest stable release.
 
@@ -146,6 +146,12 @@ Alternatively (and to contribute), you can clone this repo and execute:
 .. code-block:: bash
 
     sudo python3 setup.py install
+
+This will give you a ``userdocker`` command that you can test with:
+
+.. code-block:: bash
+
+    userdocker -h
 
 
 2. Configuration:
@@ -176,7 +182,9 @@ two lines:
 The first is strongly recommended in case you want to allow users to use nvidia
 GPUs from within docker containers via nvidia-docker (see EXECUTORS in config).
 Without it they cannot pass the NV_GPU environment variable to the userdocker
-(and thereby nvidia-docker) command to select their desired GPU(s).
+(and thereby nvidia-docker) command to select their desired GPU(s). Make sure
+to include the right path to the ``userdocker`` executable, if in doubt or the
+above does not work, run ``whereis userdocker`` to find the correct path.
 
 
 FAQ:

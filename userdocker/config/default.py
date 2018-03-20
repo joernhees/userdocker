@@ -120,8 +120,7 @@ ARGS_DEFAULT = {
 
 }
 
-# The following arguments (without options) are available to the user for the
-# given command.
+# The following arguments are available to the user for the given command.
 # Do not include args that are handled below (e.g. run -v)!
 # See explanation above on how to specify arguments.
 # Combinations are supported as tuples / lists here.
