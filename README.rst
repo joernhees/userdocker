@@ -9,9 +9,9 @@ features:
 - support for the docker ``stop`` subcommand
 - automatic container names based on the username
 
-These features will be merged into userdocker if and when the original author
+These features will be merged into ``userdocker`` if and when the original author
 approves of the changes. At the moment it is not possible to install
-``userdocker-diffproml`` alongside ``userdocker``, since the use the same paths
+``userdocker-diffproml`` alongside ``userdocker``, since they use the same paths
 and executables.
 
 ``userdocker-diffproml`` has received partial funding from the German Federal
@@ -131,7 +131,7 @@ Afterwards, as ``userdocker-diffproml`` is written in python3 and not yet availa
 
 .. code-block:: bash
 
-    sudo pip3 install -U https://github.com/saviola777/userdocker/archive/1.0.0.tar.gz
+    sudo pip3 install -U https://github.com/saviola777/userdocker/archive/diffproml-1.0.0.tar.gz
 
 The above is the preferable way of installation of the latest stable release.
 

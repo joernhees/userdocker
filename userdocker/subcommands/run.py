@@ -76,10 +76,10 @@ def parser_run(parser):
             default=[],
         )
 
-    sub_parser.add_argument(
-        "--name",
-        help="container name. Your username plus a number by default.",
-    )
+    #sub_parser.add_argument(
+    #    "--name",
+    #    help="container name. Your username plus a number by default.",
+    #)
 
     sub_parser.add_argument(
         "image",

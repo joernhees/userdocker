@@ -117,7 +117,9 @@ ARGS_ALWAYS = {
 # args completely.
 # Combinations as tuples / lists are not supported here.
 ARGS_DEFAULT = {
-
+    #'run': [
+    #    '--cpu-shares=1'
+    #],
 }
 
 # The following arguments are available to the user for the given command.
@@ -184,6 +186,9 @@ VOLUME_MOUNTS_DEFAULT = [
     # offer the necessary information in these files, but via getent.
     # '/etc/passwd:/etc/passwd:ro',
     # '/etc/group:/etc/group:ro',
+    # If the user should be able to authenticate within the container, the
+    # /etc/shadow file must be mounted as well.
+    # '/etc/shadow:/etc/shadow:ro',
 
     # default mount user's home
     user_home + ':' + user_home,

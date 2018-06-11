@@ -46,6 +46,11 @@ def nvidia_get_gpus_used_by_containers(docker: str) -> defaultdict:
     gpu_dev_id_re = re.compile('^/dev/nvidia([0-9]+)$')
     for line in gpu_used_by_containers_str.splitlines():
         container_name, container, container_env, devs = json.loads(line)
+
+        # Skip of no devs found
+        if devs is None:
+            continue
+
         for dev in devs:
             d = dev.get('PathOnHost', '')
             m = gpu_dev_id_re.match(d)
