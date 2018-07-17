@@ -8,4 +8,4 @@ https://github.com/saviola777/userdocker (this fork)
 https://github.com/joernhees/userdocker
 """
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'

@@ -6,7 +6,7 @@ features:
 
 - support for arguments with values (as opposed to just flags) in the config
   files
-- support for the docker ``stop`` subcommand
+- support for the docker ``stop`` and ``exec`` subcommand
 - automatic container names based on the username
 
 These features will be merged into ``userdocker`` if and when the original author
@@ -52,6 +52,7 @@ docker command.
 Feedback / bugreports / contributions welcome:
 
 https://github.com/saviola777/userdocker (this fork)
+
 https://github.com/joernhees/userdocker (original repository)
 
 

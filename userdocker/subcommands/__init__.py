@@ -2,6 +2,7 @@
 
 from .attach import *
 from .dockviz import *
+from .exec import *
 from .images import *
 from .ps import *
 from .pull import *

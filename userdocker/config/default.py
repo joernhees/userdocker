@@ -58,6 +58,7 @@ EXECUTOR_DEFAULT = 'docker'
 ALLOWED_SUBCOMMANDS = [
     'attach',  # allows users to re-attach to _their_ containers
     'dockviz',  # tree visualization of images
+    'exec', # execute command in container
     'images',
     'load',  # see RUN_PULL as well
     'ps',
@@ -129,6 +130,13 @@ ARGS_DEFAULT = {
 ARGS_AVAILABLE = {
     'attach': [
         '--no-stdin',
+    ],
+    'exec': [
+        ('-t', '--tty'),
+        ('-i', '--interactive'),
+        ('--workdir=', '-w'),
+        ('--detach', '-d'),
+        ('--env=', '-e'),
     ],
     'images': [
         ('-a', '--all'),

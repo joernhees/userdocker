@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
 from ..helpers.cmd import init_cmd
 from ..helpers.execute import exit_exec_cmd
 from ..helpers.logger import logger
