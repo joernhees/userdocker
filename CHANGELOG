@@ -1,3 +1,14 @@
+userdocker-diffproml Version 1.1.0
+=============
+
+This is a minor release.
+
+New features:
+-------------
+
+- support for the docker ``exec`` subcommand
+
+
 userdocker-diffproml Version 1.0.0
 =============
 
