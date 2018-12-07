@@ -270,11 +270,13 @@ def exec_cmd_run(args):
         cmd += ["--cap-add=%s" % cap_add]
 
     # add default container name if not specified by the user
-    if not args.name:
-        cmd += ['--name', container_get_next_name(args.executor_path)]
+    name = container_get_next_name(args.executor_path)\
+        if not args.name else args.name
+    
+    cmd += ['--name', name]
 
     # additional injection protection, deactivated for now due to nvidia-docker
-    # unability to handle this
+    # inability to handle this
     # cmd.append("--")
 
     img = args.image
