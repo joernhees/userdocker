@@ -9,6 +9,8 @@ New features:
 - NV_ALLOW_OWN_GPU_REUSE allows users to run further containers on GPUs they
   already use. Will only happen when explicitly requesting a GPU via NV_GPU, not
   when implicitly assigning a new GPU.
+- ARGS_ALWAYS and ARGS_AVAILABLE allow assignments in simple string args making
+  exactly this `--arg=val` combination mandatory/available to the user.
 
 Minor improvements:
 -------------------

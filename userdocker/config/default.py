@@ -66,21 +66,24 @@ ALLOWED_SUBCOMMANDS = [
     'version',
 ]
 
-# Simple arguments without options (flags):
-# Arguments (without options) that you want to enforce on the user:
-# Do not include args that are handled below (e.g. run -v)!
+# Arguments that you want to enforce on the user:
+# Do not include args that are handled below (e.g. run -v, -p, --cap-drop)!
 # The following arguments will always be injected for the corresponding command:
 ARGS_ALWAYS = {
     'run': [
         # '-t',
         # '-i',
         '--rm',
+        # '--shm-size=1g',
     ],
 }
-# The following arguments (without options) are available to the user for the
+
+# The following arguments are available to the user for the
 # given command.
-# Do not include args that are handled below (e.g. run -v)!
-# (aliases are supported as tuples below, but not in ARGS_ALWAYS)
+# Do not include args that are handled below (e.g. run -v, -p, --cap-drop)!
+# Aliases are supported as tuples/lists below, but not in ARGS_ALWAYS.
+# Simple string args can contain assignments (e.g., '--arg=val'). The user can
+# then use --arg=val.
 ARGS_AVAILABLE = {
     'attach': [
         '--no-stdin',
@@ -110,6 +113,7 @@ ARGS_AVAILABLE = {
         '--read-only',
         # users can map all exposed container ports to random free host ports:
         ('-P', '--publish-all'),
+        # '--shm-size=16g',  # allows users to set shared mem size
     ],
 }
 

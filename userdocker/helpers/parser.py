@@ -1,9 +1,23 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import argparse
 
 from ..config import ARGS_ALWAYS
 from ..config import ARGS_AVAILABLE
+
+
+class _PatchThroughAssignmentAction(argparse._AppendAction):
+    """Action that appends not only the value but the option=value to dest.
+
+    Useful for patch through args with assignment like: --shm-size=1g.
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        super(_PatchThroughAssignmentAction, self).__call__(
+            parser, namespace,
+            values=option_string + '=' + values,
+            option_string=option_string)
 
 
 def init_subcommand_parser(parent_parser, scmd):
@@ -35,22 +49,39 @@ def init_subcommand_parser(parent_parser, scmd):
         if not args:
             continue
 
-        # make sure arg starts with - and doesn't contain = or ' '
         for arg in args:
-            if not arg.startswith('-') or '=' in arg or ' ' in arg:
+            # make sure each arg starts with - and doesn't contain ' '
+            if not arg.startswith('-') or ' ' in arg:
                 raise NotImplementedError(
                     "Cannot understand admin defined ARG %s for command %s" % (
                         arg, scmd))
+            if '=' in arg:
+                if len(args) != 1:
+                    raise NotImplementedError(
+                        "Only supports single string args with values: "
+                        "%s for command %s" % (arg, scmd))
 
         h = "see docker help"
         if set(args) & set(ARGS_ALWAYS.get(scmd, [])):
             h += ' (enforced by admin)'
-        kwds = {
-            "help": h,
-            "action": "append_const",
-            "const": args[0],
-            "dest": "patch_through_args",
-        }
+
+        s = args[0]
+        if '=' in s:
+            arg, val = s.split('=')
+            args = [arg]
+            kwds = {
+                "help": h,
+                "action": _PatchThroughAssignmentAction,
+                "choices": [val],
+                "dest": "patch_through_args",
+            }
+        else:
+            kwds = {
+                "help": h,
+                "action": "append_const",
+                "const": s,
+                "dest": "patch_through_args",
+            }
         parser.add_argument(*args, **kwds)
 
     return parser
