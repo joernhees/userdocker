@@ -15,11 +15,14 @@ from .logger import logger
 from .execute import exec_cmd
 
 
-def container_find_userdocker_user_uid(container_env):
+def container_find_userdocker_user_uid_gpus(container_env):
     pairs = [var.partition('=') for var in container_env]
     users = [v for k, _, v in pairs if k == 'USERDOCKER_USER']
     uids = [v for k, _, v in pairs if k == 'USERDOCKER_UID']
-    return users[0] if users else '', int(uids[0]) if uids else None
+    gpus = [v for k, _, v in pairs if k == 'USERDOCKER_NV_GPU']
+    if gpus:
+        gpus = [int(g) for g in gpus[0].split(',')]
+    return users[0] if users else '', int(uids[0]) if uids else None, gpus
 
 
 def nvidia_get_gpus_used_by_containers(docker):
@@ -34,29 +37,24 @@ def nvidia_get_gpus_used_by_containers(docker):
     gpu_used_by_containers_str = exec_cmd(
         [
             docker, 'inspect', '--format',
-            '[{{json .Name}}, {{json .Id}}, {{json .Config.Env}}, '
-            '{{json $.HostConfig.Devices}}]'
+            '[{{json .Name}}, {{json .Id}}, {{json .Config.Env}}]'
         ] + running_containers,
         return_status=False,
         loglvl=logging.DEBUG,
     )
     logger.debug('gpu_used_by_containers_str: %s', gpu_used_by_containers_str)
-    gpu_dev_id_re = re.compile('^/dev/nvidia([0-9]+)$')
     for line in gpu_used_by_containers_str.splitlines():
-        container_name, container, container_env, devs = json.loads(line)
-        for dev in devs:
-            d = dev.get('PathOnHost', '')
-            m = gpu_dev_id_re.match(d)
-            if m:
-                gpu_id = int(m.groups()[0])
-                container_user, container_uid = container_find_userdocker_user_uid(container_env)
-                gpu_used_by_containers[gpu_id].append(
-                    (container, container_name, container_user, container_uid)
-                )
-                logger.debug(
-                    'gpu %d used by container: %s, name: %s, user: %s, uid: %s',
-                    gpu_id, container, container_name, container_user, container_uid
-                )
+        container_name, container, container_env = json.loads(line)
+        container_user, container_uid, gpus = \
+            container_find_userdocker_user_uid_gpus(container_env)
+        for gpu_id in gpus:
+            gpu_used_by_containers[gpu_id].append(
+                (container, container_name, container_user, container_uid)
+            )
+            logger.debug(
+                'gpu %d used by container: %s, name: %s, user: %s, uid: %s',
+                gpu_id, container, container_name, container_user, container_uid
+            )
     return gpu_used_by_containers
 
 

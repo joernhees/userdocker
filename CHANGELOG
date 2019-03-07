@@ -25,6 +25,9 @@ Bug fixes:
 
 - Removed allow_abbrev to allow flag combinations, #3
 - Fixed parsing dups bug in ARGS_AVAILABLE and ARGS_ALWAYS, #4
+- GPU assignment is now saved in USERDOCKER_NV_GPU container env var  for later
+  use as docker's inspect was less stable than expected ("HostConfig" seems to
+  have disappeared)
 
 
 
