@@ -126,12 +126,11 @@ ARGS_AVAILABLE = {
 #   --no-default-mounts option
 # - The user can mount any of the above explicitly with "-v", redundancy is ok
 # - You (admin) can specify whatever usually comes after the "-v" arg in
-#   "host_path:container_path:flags" form. If you do not specify a target, the
-#   user may select one, which is potentially unsafe. If you don't specify a
-#   flag, the user can append a "ro" to guard herself (even for
-#   VOLUME_MOUNTS_ALWAYS).
+#   "host_path:container_path[:flags]" form. If container_path is empty, the
+#   user may select one. If you don't specify a flag, the user can append a
+#   "ro" to guard herself (for any allowed mount).
 # Example:
-# VOLUME_MOUNTS_DEFAULT = ['/netscratch:/netscratch', '/data:/input:ro']
+# VOLUME_MOUNTS_AVAILABLE = ['/scratch:/scratch', '/data:/input:ro', '/foo:']
 VOLUME_MOUNTS_ALWAYS = []
 VOLUME_MOUNTS_AVAILABLE = []
 VOLUME_MOUNTS_DEFAULT = [

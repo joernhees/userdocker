@@ -185,6 +185,8 @@ def exec_cmd_run(args):
                 "ERROR: given port mapping not allowed: %s" % pm
             )
 
+
+    # check mounts
     mounts = []
     mounts_available = \
         VOLUME_MOUNTS_ALWAYS + VOLUME_MOUNTS_DEFAULT + VOLUME_MOUNTS_AVAILABLE
@@ -201,16 +203,7 @@ def exec_cmd_run(args):
             mounts += [user_mount]
             continue
 
-        # literal matches didn't work, allow potential unspecified
-        # container_path mounts
-        host_path = user_mount.split(':')[0]
-        if host_path in mounts:
-            continue
-        if user_mount in mounts_available:
-            mounts += [user_mount]
-            continue
-
-        # check if the user appended a 'ro' flag
+        # literal matches didn't work, check if the user appended a 'ro' flag
         if len(user_mount.split(':')) == 3:
             host_path, container_path, flag = user_mount.split(':')
             if flag == 'ro':
@@ -222,6 +215,13 @@ def exec_cmd_run(args):
                     continue
                 if st in mounts_available:
                     mounts += [user_mount]
+                    continue
+
+        # allow potential unspecified container_path mounts
+        host_path = user_mount.split(':')[0] + ':'
+        if host_path in mounts_available:
+            mounts += [user_mount]
+            continue
 
         raise UserDockerException(
             "ERROR: given mount not allowed: %s" % user_mount
@@ -237,6 +237,10 @@ def exec_cmd_run(args):
             os.listdir(ms)
 
     for mount in mounts:
+        if ':' not in mount:
+            raise UserDockerException(
+                "ERROR: anonymous mounts currently not supported: %s" % mount
+            )
         cmd += ["-v", mount]
 
 
