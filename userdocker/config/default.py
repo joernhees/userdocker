@@ -34,7 +34,7 @@ from . import uid, gid, user_name, group_name, user_home
 # config files config_99_adm.py and config_50_udocker.py, then the execution
 # order is:
 # - package defaults
-# - /etc/userdocker/group.py
+# - /etc/userdocker/config.py
 # - /etc/userdocker/group/config_50_udocker.py
 # - /etc/userdocker/group/config_99_adm.py
 # - ...
