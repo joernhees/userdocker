@@ -23,6 +23,7 @@ from ..config import VOLUME_MOUNTS_ALWAYS
 from ..config import VOLUME_MOUNTS_AVAILABLE
 from ..config import VOLUME_MOUNTS_DEFAULT
 from ..config import gid
+from ..config import gids
 from ..config import uid
 from ..config import user_name
 from ..helpers.cmd import init_cmd
