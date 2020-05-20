@@ -23,6 +23,7 @@ from ..config import VOLUME_MOUNTS_ALWAYS
 from ..config import VOLUME_MOUNTS_AVAILABLE
 from ..config import VOLUME_MOUNTS_DEFAULT
 from ..config import gid
+from ..config import gids
 from ..config import uid
 from ..config import user_name
 from ..helpers.cmd import init_cmd
@@ -264,6 +265,10 @@ def exec_cmd_run(args):
 
     if USER_IN_CONTAINER:
         cmd += ["-u", "%d:%d" % (uid, gid)]
+        for _g in gids:
+            if _g < 1000 or _g == gid:
+                continue
+            cmd += ["--group-add", "%d" % (_g)]
 
     for cap_drop in CAPS_DROP:
         cmd += ["--cap-drop=%s" % cap_drop]
