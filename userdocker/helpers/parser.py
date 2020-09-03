@@ -5,6 +5,7 @@ import argparse
 
 from ..config import ARGS_ALWAYS
 from ..config import ARGS_AVAILABLE
+from ..config import ARGS_DEFAULT
 
 
 class _PatchThroughAssignmentAction(argparse._AppendAction):
@@ -28,6 +29,9 @@ def init_subcommand_parser(parent_parser, scmd):
     parser.set_defaults(
         patch_through_args=[],
     )
+
+    for arg, val in ARGS_DEFAULT.get(scmd, {}).items():
+        parser.add_argument(arg, default=[f'{arg}={val}'], dest="patch_through_args", action=_PatchThroughAssignmentAction)
 
     # patch args through
     _args_seen = []
