@@ -31,7 +31,8 @@ def init_subcommand_parser(parent_parser, scmd):
     )
 
     for arg, val in ARGS_DEFAULT.get(scmd, {}).items():
-        parser.add_argument(arg, default=[f'{arg}={val}'], dest="patch_through_args", action=_PatchThroughAssignmentAction)
+        parser.add_argument(arg, dest="patch_through_args", action=_PatchThroughAssignmentAction)
+        parser.set_defaults(patch_through_args=parser.get_default('patch_through_args') + [f'{arg}={val}'])
 
     # patch args through
     _args_seen = []
