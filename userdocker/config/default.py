@@ -117,6 +117,15 @@ ARGS_AVAILABLE = {
     ],
 }
 
+# The following arguments sets default values that can be 
+# overwritten by the user.
+# Do not include these args in ARGS_AVAILABLE or ARGS_ALWAYS
+ARGS_DEFAULT = {
+    'run': {
+        #'--memory': '50m'
+    }    
+}
+
 
 # Volume mounts:
 # - VOLUME_MOUNTS_ALWAYS will be mounted whether the user wants it or not
